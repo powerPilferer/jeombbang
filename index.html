@@ -76,14 +76,17 @@
       padding: 0 6px; border-radius: 999px; background: var(--accent); color: #fff; font-size: 11.5px; font-weight: 800; }
     .visited-empty { padding: 13px 14px; border: 1px dashed rgba(239,91,63,.35); border-radius: 14px;
       color: var(--muted); font-size: 12.5px; line-height: 1.5; background: rgba(255,255,255,.4); }
-    .visit-card { width: 100%; display: flex; gap: 11px; align-items: center; padding: 11px 12px;
+    .visit-card { position: relative; width: 100%; display: flex; flex-direction: column;
+      align-items: flex-start; gap: 2px; padding: 12px 34px 12px 14px;
       border: 0; border-left: 4px solid var(--accent); border-radius: 12px; background: #fff;
       cursor: pointer; text-align: left; color: inherit; box-shadow: 0 3px 10px rgba(59,45,27,.07); transition: .15s ease; }
     .visit-card:hover { transform: translateX(2px); box-shadow: 0 5px 16px rgba(59,45,27,.12); }
-    .visit-card .stamp { flex-shrink: 0; width: 38px; height: 38px; display: grid; place-items: center;
-      border-radius: 50%; background: rgba(239,91,63,.1); font-size: 14px; font-weight: 900; color: var(--accent-dark); }
-    .visit-card strong { display: block; font-size: 13.5px; }
-    .visit-card span { display: block; margin-top: 2px; color: var(--muted); font-size: 11.5px; line-height: 1.4; }
+    .visit-card .v-stars { font-size: 15px; letter-spacing: 1.5px; line-height: 1; }
+    .visit-card .v-stars .on { color: #f2a33c; }
+    .visit-card .v-stars .off { color: #ded5c7; }
+    .visit-card .v-name { font-size: 14px; font-weight: 800; margin-top: 2px; }
+    .visit-card .v-meta { color: var(--muted); font-size: 11.5px; line-height: 1.4; }
+    .visit-card .del { position: absolute; top: 10px; right: 10px; }
     .detail-tel { color: var(--green); font-weight: 800; font-size: 13px; text-decoration: none; }
     .detail-naver { color: #03c75a; font-weight: 800; font-size: 13px; text-decoration: none; }
     .filters { display: flex; gap: 7px; flex-wrap: wrap; }
@@ -134,7 +137,7 @@
       <div class="date">2026년 8월 13일 수요일 · 저녁 추천</div>
       <section class="hero">
         <div class="hero-top">
-          <span class="badge">오늘의 선택</span>
+          <span class="badge">오늘의 추천</span>
           <small>저녁 영업 17:00 시작</small>
         </div>
         <h2>진고개</h2>
@@ -202,7 +205,7 @@
         html: `<div class="pin ${place.today ? 'today' : ''}"><span>${index + 1}</span></div>`,
         iconSize: [40, 40], iconAnchor: [20, 36], popupAnchor: [0, -34]
       });
-      const popup = `<div class="popup-kicker">${place.today ? '오늘의 선택' : place.category}</div><div class="popup-title">${place.name}</div><p class="popup-copy">${place.menu} · ${place.price.toLocaleString()}원<br>${place.walk}<br>${place.hours}</p>`;
+      const popup = `<div class="popup-kicker">${place.today ? '오늘의 추천' : place.category}</div><div class="popup-title">${place.name}</div><p class="popup-copy">${place.menu} · ${place.price.toLocaleString()}원<br>${place.walk}<br>${place.hours}</p>`;
       const marker = L.marker([place.lat, place.lng], { icon }).addTo(map).bindPopup(popup);
       marker.on('click', () => selectPlace(place.id, false));
       markers.set(place.id, marker);
@@ -227,7 +230,7 @@
 
     function renderDetail(place) {
       const panel = document.getElementById('detail');
-      const kicker = place.today ? '오늘의 선택' : `후보 · ${place.category}`;
+      const kicker = place.today ? '오늘의 추천' : `후보 · ${place.category}`;
       panel.innerHTML = `
         <div class="detail-kicker">${kicker}</div>
         <h3>${place.name}</h3>
@@ -303,6 +306,13 @@
     const RATE_EMOJI = { '최고': '😋', '좋음': '👍', '보통': '😐', '별로': '👎' };  // 옛 기록 호환용
     const STAR_WORDS = { 1: '별로였어요', 2: '아쉬워요', 3: '보통', 4: '좋았어요', 5: '또 가고 싶다!' };
     function rateBadge(r) { return typeof r === 'number' ? '★' + r : (RATE_EMOJI[r] || '🍚'); }
+    function starsHtml(r) {
+      if (typeof r !== 'number') r = ({ '최고': 5, '좋음': 4, '보통': 3, '별로': 1 })[r] || 0;
+      const full = Math.floor(r), half = r % 1 >= 0.5;
+      const onPart = '★'.repeat(full) + (half ? '½' : '');
+      const offPart = '☆'.repeat(5 - full - (half ? 1 : 0));
+      return `<span class="on">${onPart}</span><span class="off">${offPart}</span>`;
+    }
     function rateText(r) {
       if (typeof r === 'number') {
         const full = Math.floor(r), half = r % 1 >= 0.5;
@@ -373,9 +383,9 @@
       wrap.innerHTML = entries.map(a => {
         const v = a[0]; const n = a.length;
         return `<button type="button" class="visit-card visited-row" data-id="${v.id}">
-          <div class="stamp">${rateBadge(v.rate)}</div>
-          <div><strong>${v.name}</strong>
-          <span>${v.comment || v.menu || ''} · ${v.date}${n > 1 ? ` · ${n}회 방문` : ''}</span></div></button>`;
+          <span class="v-stars">${starsHtml(v.rate)}</span>
+          <strong class="v-name">${v.name}</strong>
+          <span class="v-meta">${v.comment || v.menu || ''} · ${v.date}${n > 1 ? ` · ${n}회 방문` : ''}</span></button>`;
       }).join('');
       wrap.querySelectorAll('.visited-row').forEach(b => b.addEventListener('click', () => {
         const pl = places.find(x => x.id === b.dataset.id);
