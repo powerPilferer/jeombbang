@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>점빵이 맛지도 · 충무로</title>
+  <link rel="preconnect" href="https://unpkg.com">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <style>
+    :root {
+      --ink: #25231f;
+      --muted: #746f66;
+      --paper: #f6f0e5;
+      --panel: rgba(255, 253, 248, .94);
+      --line: #ded5c7;
+      --accent: #ef5b3f;
+      --accent-dark: #be3824;
+      --green: #337b5c;
+      --shadow: 0 18px 48px rgba(59, 45, 27, .16);
+    }
+    * { box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; margin: 0; }
+    body { font-family: Pretendard, "Apple SD Gothic Neo", sans-serif; color: var(--ink); background: var(--paper); }
+    button, input { font: inherit; }
+    .app { height: 100%; display: grid; grid-template-columns: 390px minmax(0, 1fr); overflow: hidden; }
+    .sidebar { position: relative; z-index: 500; padding: 28px 24px 22px; overflow-y: auto; background: var(--panel); backdrop-filter: blur(18px); border-right: 1px solid var(--line); box-shadow: 12px 0 40px rgba(59, 45, 27, .08); }
+    .brand { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .brand-mark { width: 48px; height: 48px; display: grid; place-items: center; border-radius: 17px; color: #fff; background: var(--accent); font-size: 24px; transform: rotate(-4deg); box-shadow: 0 8px 20px rgba(239, 91, 63, .28); }
+    .brand-copy { flex: 1; }
+    .eyebrow { margin: 0 0 3px; color: var(--accent-dark); font-size: 12px; font-weight: 800; letter-spacing: .12em; }
+    h1 { margin: 0; font-size: 25px; letter-spacing: -.04em; }
+    .date { margin-top: 20px; color: var(--muted); font-size: 13px; }
+    .hero { margin-top: 10px; padding: 22px; border-radius: 24px; color: #fff; background: var(--ink); box-shadow: var(--shadow); }
+    .hero-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .badge { display: inline-flex; padding: 7px 10px; border-radius: 999px; font-size: 12px; font-weight: 800; background: var(--accent); }
+    .hero small { color: rgba(255, 255, 255, .65); }
+    .hero h2 { margin: 16px 0 4px; font-size: 26px; letter-spacing: -.05em; }
+    .menu { margin: 0; color: #ffd7cf; font-weight: 700; }
+    .facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 18px; }
+    .fact { padding: 11px 8px; border: 1px solid rgba(255, 255, 255, .13); border-radius: 14px; text-align: center; }
+    .fact strong, .fact span { display: block; }
+    .fact strong { font-size: 14px; }
+    .fact span { margin-top: 2px; color: rgba(255, 255, 255, .6); font-size: 11px; }
+    .hero button { width: 100%; margin-top: 15px; padding: 12px; border: 0; border-radius: 14px; color: var(--ink); background: #fff; font-weight: 800; cursor: pointer; }
+    .section-title { margin: 25px 2px 10px; font-size: 14px; }
+    .detail { margin-top: 12px; padding: 18px 20px; border: 1px solid var(--line); border-radius: 20px; background: #fff; box-shadow: 0 8px 24px rgba(59,45,27,.08); }
+    .detail-kicker { color: var(--accent-dark); font-size: 11px; font-weight: 800; letter-spacing: .08em; }
+    .detail h3 { margin: 5px 0 2px; font-size: 19px; letter-spacing: -.03em; }
+    .detail .detail-menu { margin: 0; color: var(--accent-dark); font-weight: 700; font-size: 13.5px; }
+    .detail-facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; margin-top: 13px; }
+    .detail-facts .fact { border: 1px solid var(--line); border-radius: 12px; padding: 9px 6px; text-align: center; }
+    .detail-facts .fact strong { font-size: 12.5px; color: var(--ink); }
+    .detail-facts .fact span { color: var(--muted); font-size: 10.5px; }
+    .detail-note { margin: 12px 0 0; padding-top: 11px; border-top: 1px dashed var(--line); color: var(--muted); font-size: 12.5px; line-height: 1.55; }
+    .detail-links { display: flex; gap: 14px; margin-top: 11px; }
+    .visits { margin-top: 13px; display: grid; gap: 7px; }
+    .visit { padding: 10px 12px; border-radius: 12px; background: rgba(239,91,63,.07); font-size: 12.5px; line-height: 1.5; }
+    .visit b { color: var(--accent-dark); margin-right: 6px; }
+    .visit small { color: var(--muted); margin-left: 6px; }
+    .visit-btn { margin-top: 13px; width: 100%; padding: 11px; border: 1px dashed var(--accent); border-radius: 12px; color: var(--accent-dark); background: rgba(239,91,63,.05); font-weight: 800; cursor: pointer; }
+    .visit-form { margin-top: 11px; padding: 13px; border: 1px solid var(--line); border-radius: 14px; background: rgba(255,255,255,.7); display: grid; gap: 9px; }
+    .star-row { display: flex; align-items: center; gap: 2px; }
+    .star { border: 0; background: none; padding: 2px; font-size: 30px; line-height: 1; color: #ddd3c4; cursor: pointer; transition: color .1s, transform .1s; }
+    .star:hover { transform: scale(1.15); }
+    .star.on { color: #f2a33c; text-shadow: 0 1px 4px rgba(242,163,60,.4); }
+    .star.half { background: linear-gradient(90deg, #f2a33c 50%, #ddd3c4 50%);
+      -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none; }
+    .star-label { margin-left: 8px; font-size: 12px; color: var(--muted); font-weight: 700; }
+    .visit-form textarea { border: 1px solid var(--line); border-radius: 10px; padding: 9px 11px; font-size: 13px; resize: vertical; min-height: 52px; font-family: inherit; }
+    .visit-save { padding: 10px; border: 0; border-radius: 10px; background: var(--accent); color: #fff; font-weight: 800; cursor: pointer; }
+    .visited-box { margin-top: 26px; padding: 16px 15px 15px; border-radius: 20px;
+      background: linear-gradient(150deg, rgba(239,91,63,.10), rgba(51,123,92,.08));
+      border: 1px solid rgba(239,91,63,.22); }
+    .visited-box .vb-title { display: flex; align-items: center; gap: 7px; margin: 0 2px 11px; font-size: 14px; }
+    .visited-box .vb-title .n { display: inline-grid; place-items: center; min-width: 21px; height: 21px;
+      padding: 0 6px; border-radius: 999px; background: var(--accent); color: #fff; font-size: 11.5px; font-weight: 800; }
+    .visited-empty { padding: 13px 14px; border: 1px dashed rgba(239,91,63,.35); border-radius: 14px;
+      color: var(--muted); font-size: 12.5px; line-height: 1.5; background: rgba(255,255,255,.4); }
+    .visit-card { width: 100%; display: flex; gap: 11px; align-items: center; padding: 11px 12px;
+      border: 0; border-left: 4px solid var(--accent); border-radius: 12px; background: #fff;
+      cursor: pointer; text-align: left; color: inherit; box-shadow: 0 3px 10px rgba(59,45,27,.07); transition: .15s ease; }
+    .visit-card:hover { transform: translateX(2px); box-shadow: 0 5px 16px rgba(59,45,27,.12); }
+    .visit-card .stamp { flex-shrink: 0; width: 38px; height: 38px; display: grid; place-items: center;
+      border-radius: 50%; background: rgba(239,91,63,.1); font-size: 14px; font-weight: 900; color: var(--accent-dark); }
+    .visit-card strong { display: block; font-size: 13.5px; }
+    .visit-card span { display: block; margin-top: 2px; color: var(--muted); font-size: 11.5px; line-height: 1.4; }
+    .export-bar { position: fixed; right: 20px; bottom: 20px; z-index: 600; padding: 11px 16px; border: 0; border-radius: 999px; background: var(--ink); color: #fff; font-weight: 800; font-size: 13px; cursor: pointer; box-shadow: var(--shadow); display: none; }
+    .detail-tel { color: var(--green); font-weight: 800; font-size: 13px; text-decoration: none; }
+    .detail-naver { color: #03c75a; font-weight: 800; font-size: 13px; text-decoration: none; }
+    .filters { display: flex; gap: 7px; flex-wrap: wrap; }
+    .filter { padding: 8px 12px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); background: rgba(255,255,255,.55); cursor: pointer; }
+    .filter.active { border-color: var(--ink); color: #fff; background: var(--ink); }
+    .list { display: grid; gap: 9px; }
+    .place { width: 100%; display: grid; grid-template-columns: 1fr auto; gap: 10px; padding: 14px 15px; border: 1px solid transparent; border-radius: 18px; text-align: left; color: inherit; background: rgba(255,255,255,.5); cursor: pointer; transition: .2s ease; }
+    .place:hover, .place.active { border-color: var(--accent); background: #fff; transform: translateY(-1px); }
+    .place strong { display: block; margin-bottom: 4px; }
+    .place span { color: var(--muted); font-size: 12px; }
+    .place .price { color: var(--accent-dark); font-weight: 800; }
+    .map-shell { position: relative; min-width: 0; }
+    #map { width: 100%; height: 100%; background: #e9e2d6; }
+    .map-title { position: absolute; z-index: 450; top: 22px; left: 24px; display: flex; align-items: center; gap: 10px; padding: 11px 14px; border: 1px solid rgba(255,255,255,.8); border-radius: 16px; background: var(--panel); box-shadow: var(--shadow); font-size: 13px; font-weight: 800; }
+    .map-title i { width: 9px; height: 9px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 5px rgba(51,123,92,.15); }
+    .leaflet-control-attribution { font-size: 9px; }
+    .leaflet-popup-content-wrapper { border-radius: 18px; box-shadow: var(--shadow); }
+    .leaflet-popup-content { width: 230px !important; margin: 15px 17px; }
+    .popup-kicker { color: var(--accent-dark); font-size: 11px; font-weight: 800; }
+    .popup-title { margin: 4px 0; font-size: 17px; font-weight: 800; }
+    .popup-copy { margin: 0; color: var(--muted); line-height: 1.5; }
+    .pin { width: 40px; height: 40px; display: grid; place-items: center; border: 4px solid #fff; border-radius: 50% 50% 50% 8px; color: #fff; background: var(--ink); box-shadow: 0 7px 18px rgba(41,34,25,.28); transform: rotate(-45deg); font-size: 15px; font-weight: 900; }
+    .pin span { transform: rotate(45deg); }
+    .pin.today { background: var(--accent); transform: rotate(-45deg) scale(1.14); }
+    .station-pin { width: 22px; height: 22px; display: grid; place-items: center; border: 3px solid #fff; border-radius: 50%; color: #fff; background: var(--green); box-shadow: 0 4px 12px rgba(0,0,0,.2); font-size: 10px; font-weight: 900; }
+    @media (max-width: 780px) {
+      .app { grid-template-columns: 1fr; grid-template-rows: 56% 44%; overflow: auto; }
+      .map-shell { grid-row: 1; min-height: 390px; }
+      .sidebar { grid-row: 2; overflow: visible; padding: 20px 16px 32px; border: 0; border-top: 1px solid var(--line); }
+      .map-title { top: 12px; left: 12px; }
+      .brand { display: none; }
+      .date { margin-top: 0; }
+      .hero { margin-top: 8px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <aside class="sidebar">
+      <header class="brand">
+        <div class="brand-mark">🍚</div>
+        <div class="brand-copy">
+          <p class="eyebrow">CHUNGMURO FOOD MAP</p>
+          <h1>점빵이 맛지도</h1>
+        </div>
+      </header>
+
+      <div class="date">2026년 8월 13일 수요일 · 저녁 추천</div>
+      <section class="hero">
+        <div class="hero-top">
+          <span class="badge">오늘의 선택</span>
+          <small>저녁 영업 17:00 시작</small>
+        </div>
+        <h2>진고개</h2>
+        <p class="menu">갈비탕 · 15,000원</p>
+        <div class="facts">
+          <div class="fact"><strong>약 5분</strong><span>충무로역에서</span></div>
+          <div class="fact"><strong>21:00</strong><span>영업 종료</span></div>
+          <div class="fact"><strong>한식</strong><span>오늘의 장르</span></div>
+        </div>
+        <button type="button" data-focus="jingogae">지도에서 보기</button>
+      </section>
+
+      <section class="detail" id="detail" hidden></section>
+
+      <h2 class="section-title">근처 후보</h2>
+      <div class="filters" aria-label="음식 종류 필터">
+        <button class="filter active" data-filter="all">전체</button>
+        <button class="filter" data-filter="고기">고기</button>
+        <button class="filter" data-filter="국물">국물</button>
+        <button class="filter" data-filter="돈까스">돈까스</button>
+        <button class="filter" data-filter="함박">함박</button>
+        <button class="filter" data-filter="중식">중식</button>
+        <button class="filter" data-filter="카레">카레</button>
+      </div>
+      <div class="list" id="place-list"></div>
+
+      <section class="visited-box">
+        <h2 class="vb-title">🍚 다녀온 곳 <span class="n" id="visited-count">0</span></h2>
+        <div class="list" id="visited-list"></div>
+      </section>
+    </aside>
+
+    <section class="map-shell" aria-label="충무로 맛집 지도">
+      <div class="map-title"><i></i> 충무로역 도보 10분 맛지도</div>
+      <div id="map"></div>
+    </section>
+  </main>
+  <button type="button" class="export-bar" id="export-bar">방문기록 저장</button>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script>
+    const places = [
+      { id: 'jingogae', name: '진고개', category: '국물', menu: '갈비탕', price: 15000, hours: '11:00–21:00 · 휴식 15:00–17:00 · 일요일 휴무', walk: '도보 약 5분', tel: '02-2267-0955', note: '1963년 개업한 충무로 한식 노포 · 육개장 14,000원 · 물냉면 13,000원 · 갈비찜정식 24,000원은 예산 초과', lat: 37.5630127, lng: 126.9928333, today: true },
+      { id: 'tsuyakatsu', name: '츠야카츠 충무로본점', category: '돈까스', menu: '안심돈까스정식', price: 13900, hours: '11:00–21:00 · 휴식 15:00–17:00 · L.O 20:30', walk: '도보 약 4분', tel: '0507-1332-0253', lat: 37.5625066, lng: 126.9921619 },
+      { id: 'jjukkumi', name: '충무로쭈꾸미불고기', category: '고기', menu: '쭈꾸미 불고기', price: 18000, hours: '12:00–22:00 · 브레이크 없음 · 일요일 휴무', walk: '도보 약 3분', tel: '02-2279-0803', lat: 37.5617290, lng: 126.9921675 },
+      { id: 'pildonghambak', name: '필동함박 충무로 본점', category: '함박', menu: '투움바 함박 스테이크', price: 13500, hours: '매일 10:30–21:00 · L.O 20:15 · 브레이크타임 표기 없음', walk: '도보 약 3분', tel: '0507-1401-6608', note: '백종원 골목식당 출연 · 주차 불가 · 점심시간 웨이팅 후기 있음', lat: 37.5608512, lng: 126.9962685 },
+      { id: 'chungpu', name: '충푸', category: '중식', menu: '유린기', price: 19000, hours: '평일 11:00–22:00 · 휴식 15:00 무렵–17:00(출처별 14:30 표기도 있음) · L.O 21:00 · 토 17:00–22:00 · 일 휴무', walk: '도보 약 2분 (8번 출구)', tel: '0507-1396-9914', note: '2024년 9월 오픈한 중식 다이닝 · 매장이 작아 웨이팅 가능 · 점심·저녁 메뉴 구분', lat: 37.5624231, lng: 126.9951264 },
+      { id: 'hwangpyeong', name: '황평집', category: '국물', menu: '닭곰탕', price: 9000, hours: '11:00–21:30 · 휴식 15:30–17:00(~17:30 표기도 있음) · 일 휴무', walk: '도보 약 9분', tel: '02-2266-6875', note: '브레이크 종료가 출처별 17:00/17:30으로 달라 5시 정각 입장은 방문 전 확인', lat: 37.5640375, lng: 126.9961226 },
+      { id: 'chungmucurry', name: '충무커리', category: '카레', menu: '치킨윙토마토커리', price: 12900, hours: '평일 11:00–20:00 · 휴식 14:30–17:00 · L.O 19:30 · 토·일 휴무', walk: '도보 약 7분', tel: '010-3762-5379', note: '르 꼬르동 블루 출신 셰프의 일본식 수제 카레 · 2층 소규모 매장(약 15석) · 키오스크 주문 · 주차 불가', lat: 37.5630091, lng: 126.9913932 }
+    ];
+
+    const map = L.map('map', { zoomControl: false }).setView([37.5619, 126.9946], 16);
+    L.control.zoom({ position: 'bottomright' }).addTo(map);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    const stationIcon = L.divIcon({ className: '', html: '<div class="station-pin">역</div>', iconSize: [22, 22], iconAnchor: [11, 11] });
+    L.marker([37.5612, 126.9941], { icon: stationIcon, zIndexOffset: 1000 }).addTo(map).bindTooltip('충무로역', { direction: 'top' });
+
+    const markers = new Map();
+    places.forEach((place, index) => {
+      const icon = L.divIcon({
+        className: '',
+        html: `<div class="pin ${place.today ? 'today' : ''}"><span>${index + 1}</span></div>`,
+        iconSize: [40, 40], iconAnchor: [20, 36], popupAnchor: [0, -34]
+      });
+      const popup = `<div class="popup-kicker">${place.today ? '오늘의 선택' : place.category}</div><div class="popup-title">${place.name}</div><p class="popup-copy">${place.menu} · ${place.price.toLocaleString()}원<br>${place.walk}<br>${place.hours}</p>`;
+      const marker = L.marker([place.lat, place.lng], { icon }).addTo(map).bindPopup(popup);
+      marker.on('click', () => selectPlace(place.id, false));
+      markers.set(place.id, marker);
+    });
+
+    const list = document.getElementById('place-list');
+    let activeFilter = 'all';
+
+    function renderList() {
+      list.innerHTML = '';
+      places.filter(p => activeFilter === 'all' || p.category === activeFilter).forEach(place => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = `place ${place.today ? 'active' : ''}`;
+        button.dataset.id = place.id;
+        const vmark = visitsOf(place.id).length ? ' <span title="다녀온 곳">🍚</span>' : '';
+        button.innerHTML = `<div><strong>${place.name}${vmark}</strong><span>${place.menu} · ${place.walk}</span></div><span class="price">${place.price.toLocaleString()}원</span>`;
+        button.addEventListener('click', () => selectPlace(place.id, true));
+        list.appendChild(button);
+      });
+    }
+
+    function renderDetail(place) {
+      const panel = document.getElementById('detail');
+      const kicker = place.today ? '오늘의 선택' : `후보 · ${place.category}`;
+      panel.innerHTML = `
+        <div class="detail-kicker">${kicker}</div>
+        <h3>${place.name}</h3>
+        <p class="detail-menu">${place.menu} · ${place.price.toLocaleString()}원</p>
+        <div class="detail-facts">
+          <div class="fact"><strong>${place.walk}</strong><span>충무로역에서</span></div>
+          <div class="fact"><strong>${place.category}</strong><span>분류</span></div>
+          <div class="fact"><strong>${place.price.toLocaleString()}원</strong><span>대표 메뉴</span></div>
+        </div>
+        <p class="detail-note">🕐 ${place.hours}${place.note ? '<br>' + place.note : ''}</p>
+        <div class="detail-links">
+          ${place.tel ? `<a class="detail-tel" href="tel:${place.tel.replace(/-/g, '')}">📞 ${place.tel}</a>` : ''}
+          <a class="detail-naver" href="${place.naver || 'https://map.naver.com/p/search/' + encodeURIComponent(place.name + ' 충무로')}" target="_blank" rel="noopener">🗺 네이버지도</a>
+        </div>
+        ${renderVisits(place.id)}
+        <button type="button" class="visit-btn" id="visit-btn">🍚 다녀왔어요 — 기록 남기기</button>
+        <div class="visit-form" id="visit-form" hidden>
+          <div class="star-row" id="rate-row">
+            <button type="button" class="star" data-v="1">★</button>
+            <button type="button" class="star" data-v="2">★</button>
+            <button type="button" class="star" data-v="3">★</button>
+            <button type="button" class="star" data-v="4">★</button>
+            <button type="button" class="star" data-v="5">★</button>
+            <span class="star-label" id="star-label">별점을 골라주세요</span>
+          </div>
+          <textarea id="visit-comment" placeholder="짧은 감상평 (선택) — 예: 볶음밥 필수. 5시 도착하니 웨이팅 없음"></textarea>
+          <button type="button" class="visit-save" id="visit-save">기록하기</button>
+        </div>`;
+      panel.hidden = false;
+      wireVisitForm(place);
+      updateExportBar();
+    }
+
+    // ── 방문 기록 (모아 찜과 같은 흐름: localStorage → 내보내기 → 점빵이가 다음 실행 때 반영)
+    const VKEY = 'jb-visited';
+    function loadVisits() { try { return JSON.parse(localStorage.getItem(VKEY)) || []; } catch (e) { return []; } }
+    function saveVisitsRaw(v) { localStorage.setItem(VKEY, JSON.stringify(v)); }
+    function visitsOf(id) { return loadVisits().filter(v => v.id === id); }
+    const RATE_EMOJI = { '최고': '😋', '좋음': '👍', '보통': '😐', '별로': '👎' };  // 옛 기록 호환용
+    const STAR_WORDS = { 1: '별로였어요', 2: '아쉬워요', 3: '보통', 4: '좋았어요', 5: '또 가고 싶다!' };
+    function rateBadge(r) { return typeof r === 'number' ? '★' + r : (RATE_EMOJI[r] || '🍚'); }
+    function rateText(r) {
+      if (typeof r === 'number') {
+        const full = Math.floor(r), half = r % 1 >= 0.5;
+        return '★'.repeat(full) + (half ? '½' : '') + '☆'.repeat(5 - full - (half ? 1 : 0));
+      }
+      return (RATE_EMOJI[r] || '') + ' ' + r;
+    }
+
+    function renderVisits(id) {
+      const rows = visitsOf(id);
+      if (!rows.length) return '';
+      return `<div class="visits">${rows.map(v =>
+        `<div class="visit"><b>${rateText(v.rate)}</b>${v.comment ? ' · ' + v.comment : ''}<small>${v.date}</small></div>`
+      ).join('')}</div>`;
+    }
+
+    function wireVisitForm(place) {
+      const btn = document.getElementById('visit-btn');
+      const form = document.getElementById('visit-form');
+      let rate = 0;
+      btn.addEventListener('click', () => { form.hidden = !form.hidden; });
+      const stars = [...form.querySelectorAll('.star')];
+      function paintStars() {
+        stars.forEach(el => {
+          const v = Number(el.dataset.v);
+          el.classList.toggle('on', rate >= v);
+          el.classList.toggle('half', rate >= v - 0.5 && rate < v);
+        });
+        document.getElementById('star-label').textContent =
+          `${rate}점 · ${STAR_WORDS[Math.max(1, Math.round(rate))]}`;
+      }
+      stars.forEach(b => b.addEventListener('click', e => {
+        const rect = b.getBoundingClientRect();
+        const leftHalf = (e.clientX - rect.left) < rect.width / 2;
+        rate = Number(b.dataset.v) - (leftHalf ? 0.5 : 0);
+        paintStars();
+      }));
+      document.getElementById('visit-save').addEventListener('click', () => {
+        if (!rate) { alert('별점을 골라주세요!'); return; }
+        const comment = document.getElementById('visit-comment').value.trim();
+        const v = loadVisits();
+        v.push({ id: place.id, name: place.name, menu: place.menu, rate, comment,
+                 date: new Date().toISOString().slice(0, 10) });
+        saveVisitsRaw(v);
+        renderList();
+        renderVisitedList();
+        renderDetail(place);
+      });
+    }
+
+    function updateExportBar() {
+      const n = loadVisits().length;
+      const bar = document.getElementById('export-bar');
+      bar.style.display = n ? 'block' : 'none';
+      bar.textContent = `방문기록 저장 (${n})`;
+    }
+
+    function renderVisitedList() {
+      const wrap = document.getElementById('visited-list');
+      const visits = loadVisits();
+      const by = {};
+      visits.forEach(v => { (by[v.id] = by[v.id] || []).push(v); });
+      document.getElementById('visited-count').textContent = Object.keys(by).length;
+      if (!visits.length) {
+        wrap.innerHTML = '<div class="visited-empty">아직 기록이 없어요. 다녀온 식당을 클릭해 \'🍚 다녀왔어요\'로 남겨보세요.</div>';
+        return;
+      }
+      const entries = Object.values(by)
+        .map(a => a.sort((x, y) => y.date.localeCompare(x.date)))
+        .sort((a, b) => b[0].date.localeCompare(a[0].date));
+      wrap.innerHTML = entries.map(a => {
+        const v = a[0]; const n = a.length;
+        return `<button type="button" class="visit-card visited-row" data-id="${v.id}">
+          <div class="stamp">${rateBadge(v.rate)}</div>
+          <div><strong>${v.name}</strong>
+          <span>${v.comment || v.menu || ''} · ${v.date}${n > 1 ? ` · ${n}회 방문` : ''}</span></div></button>`;
+      }).join('');
+      wrap.querySelectorAll('.visited-row').forEach(b => b.addEventListener('click', () => {
+        const pl = places.find(x => x.id === b.dataset.id);
+        if (pl) selectPlace(pl.id, true);
+        else showVisitOnlyDetail(b.dataset.id);
+      }));
+    }
+
+    function showVisitOnlyDetail(id) {
+      const rows = visitsOf(id);
+      if (!rows.length) return;
+      const v = rows[0];
+      const panel = document.getElementById('detail');
+      panel.innerHTML = `
+        <div class="detail-kicker">다녀온 곳 · 오늘 후보에는 없어요</div>
+        <h3>${v.name}</h3>
+        ${v.menu ? `<p class="detail-menu">${v.menu}</p>` : ''}
+        ${renderVisits(id)}
+        <div class="detail-links">
+          <a class="detail-naver" href="https://map.naver.com/p/search/${encodeURIComponent(v.name + ' 충무로')}" target="_blank" rel="noopener">🗺 네이버지도</a>
+        </div>`;
+      panel.hidden = false;
+    }
+
+    document.getElementById('export-bar').addEventListener('click', () => {
+      const blob = new Blob([JSON.stringify({ visits: loadVisits() }, null, 1)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = '점빵이-방문.json';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    });
+
+    function selectPlace(id, moveMap = true) {
+      const place = places.find(p => p.id === id);
+      document.querySelectorAll('.place').forEach(el => el.classList.toggle('active', el.dataset.id === id));
+      if (moveMap) map.flyTo([place.lat, place.lng], 17, { duration: .65 });
+      markers.get(id).openPopup();
+      renderDetail(place);
+    }
+
+    document.querySelectorAll('.filter').forEach(button => {
+      button.addEventListener('click', () => {
+        activeFilter = button.dataset.filter;
+        document.querySelectorAll('.filter').forEach(el => el.classList.toggle('active', el === button));
+        renderList();
+      });
+    });
+    document.querySelector('[data-focus]').addEventListener('click', event => selectPlace(event.currentTarget.dataset.focus, true));
+    // 옛 이모지 기록 → 별점 자동 환산 (한 번 열면 영구 변환됨)
+    (function migrateLegacyRates() {
+      const LEGACY = { '최고': 5, '좋음': 4, '보통': 3, '별로': 1 };
+      const v = loadVisits();
+      let changed = false;
+      v.forEach(r => {
+        if (typeof r.rate !== 'number' && LEGACY[r.rate]) { r.rate = LEGACY[r.rate]; changed = true; }
+      });
+      if (changed) saveVisitsRaw(v);
+    })();
+
+    renderList();
+    renderVisitedList();
+    setTimeout(() => selectPlace('jingogae', false), 450);
+  </script>
+</body>
+</html>
