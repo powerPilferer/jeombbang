@@ -266,17 +266,40 @@
     let visits = [];                        // 서버(구글시트) 기록 — 모든 기기에서 공유
     try { visits = JSON.parse(localStorage.getItem(VKEY)) || []; } catch (e) {}   // 오프라인 캐시
     function visitsOf(id) { return visits.filter(v => v.id === id).slice().reverse(); }
+    function normDate(s) {
+      const m = String(s).match(/\d{4}-\d{2}-\d{2}/);
+      if (m) return m[0];
+      const d = new Date(s);
+      return isNaN(d) ? String(s) : d.toISOString().slice(0, 10);
+    }
     async function syncVisits() {
       try {
         const d = await fetch(VISIT_URL, { cache: 'no-store' }).then(r => r.json());
         if (d.ok) {
-          visits = d.list;
+          visits = d.list.map(v => ({ ...v, date: normDate(v.date) }));
           localStorage.setItem(VKEY, JSON.stringify(visits));
           renderList();
           renderVisitedList();
         }
       } catch (e) { /* 오프라인 — 캐시로 표시 */ }
     }
+    // 옛 버전(기기 저장)에서 남긴 기록 구조 — 서버로 올려보내고 키를 비운다
+    (function rescueOldRecords() {
+      let old = [];
+      try { old = JSON.parse(localStorage.getItem('jb-visited')) || []; } catch (e) {}
+      if (!old.length) return;
+      const LEGACY = { '최고': 5, '좋음': 4, '보통': 3, '별로': 1 };
+      old.forEach(v => {
+        const rate = typeof v.rate === 'number' ? v.rate : (LEGACY[v.rate] || 0);
+        if (!v.id || !rate) return;
+        fetch(VISIT_URL, { method: 'POST', mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ id: v.id, name: v.name || '', menu: v.menu || '',
+                                 rate, comment: v.comment || '', date: v.date || '' }) }).catch(() => {});
+      });
+      localStorage.removeItem('jb-visited');
+      setTimeout(syncVisits, 2500);   // 전송 후 서버 기준으로 다시 그림
+    })();
     const RATE_EMOJI = { '최고': '😋', '좋음': '👍', '보통': '😐', '별로': '👎' };  // 옛 기록 호환용
     const STAR_WORDS = { 1: '별로였어요', 2: '아쉬워요', 3: '보통', 4: '좋았어요', 5: '또 가고 싶다!' };
     function rateBadge(r) { return typeof r === 'number' ? '★' + r : (RATE_EMOJI[r] || '🍚'); }
