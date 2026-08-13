@@ -373,7 +373,6 @@
 
     function renderVisitedList() {
       const wrap = document.getElementById('visited-list');
-      const visits = loadVisits();
       const by = {};
       visits.forEach(v => { (by[v.id] = by[v.id] || []).push(v); });
       document.getElementById('visited-count').textContent = Object.keys(by).length;
