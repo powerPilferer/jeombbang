@@ -282,7 +282,7 @@
         const d = await fetch(VISIT_URL, { cache: 'no-store' }).then(r => r.json());
         if (d.ok) {
           const byId = {};
-          d.list.forEach(v => { byId[v.id] = { ...v, date: normDate(v.date) }; });  // 같은 가게는 마지막 기록만
+          d.list.forEach(v => { delete byId[v.id]; byId[v.id] = { ...v, date: normDate(v.date) }; });  // 마지막 기록만 + 활동순 정렬
           visits = Object.values(byId);
           localStorage.setItem(VKEY, JSON.stringify(visits));
           renderList();
@@ -330,13 +330,42 @@
       cur.date = new Date().toISOString().slice(0, 10);
       if (newRate === 0) cur._cleared = true;
       localStorage.setItem(VKEY, JSON.stringify(visits));
-      fetch(VISIT_URL, { method: 'POST', mode: 'no-cors',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ id, name: cur.name, menu: cur.menu || '', rate: newRate,
-                               comment: cur.comment || '', date: cur.date }) }).catch(() => {});
+      queueSave({ id, name: cur.name, menu: cur.menu || '', rate: newRate,
+                  comment: cur.comment || '', date: cur.date });
       renderList();
       renderVisitedList();
     }
+
+    // ── 지연 저장: 별을 1분간 더 안 건드리면 전송, 페이지를 떠나면 즉시 전송
+    const pendingSaves = {};   // id → {rec, timer}
+    function queueSave(rec) {
+      if (pendingSaves[rec.id]) clearTimeout(pendingSaves[rec.id].timer);
+      pendingSaves[rec.id] = { rec, timer: setTimeout(() => flushSave(rec.id), 60000) };
+    }
+    function flushSave(id) {
+      const pnd = pendingSaves[id];
+      if (!pnd) return;
+      delete pendingSaves[id];
+      fetch(VISIT_URL, { method: 'POST', mode: 'no-cors', keepalive: true,
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(pnd.rec) }).catch(() => {});
+    }
+    function flushAllSaves() {
+      Object.keys(pendingSaves).forEach(id => {
+        const pnd = pendingSaves[id];
+        clearTimeout(pnd.timer);
+        delete pendingSaves[id];
+        if (navigator.sendBeacon) {
+          navigator.sendBeacon(VISIT_URL, new Blob([JSON.stringify(pnd.rec)], { type: 'text/plain;charset=utf-8' }));
+        } else {
+          fetch(VISIT_URL, { method: 'POST', mode: 'no-cors', keepalive: true,
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify(pnd.rec) }).catch(() => {});
+        }
+      });
+    }
+    document.addEventListener('visibilitychange', () => { if (document.hidden) flushAllSaves(); });
+    window.addEventListener('pagehide', flushAllSaves);
     function starsHtml(r) {
       if (typeof r !== 'number') r = ({ '최고': 5, '좋음': 4, '보통': 3, '별로': 1 })[r] || 0;
       const full = Math.floor(r), half = r % 1 >= 0.5;
@@ -403,19 +432,14 @@
 
     function renderVisitedList() {
       const wrap = document.getElementById('visited-list');
-      const by = {};
-      visits.filter(v => v.rate > 0 || v._cleared).forEach(v => { (by[v.id] = by[v.id] || []).push(v); });
-      document.getElementById('visited-count').textContent =
-        Object.values(by).filter(a => a[0].rate > 0 || a.some(x => x.rate > 0)).length;
-      if (!visits.length) {
+      // 별점 무관, 기록 활동 순서(최근이 위)로 쌓는다
+      const src2 = visits.filter(v => v.rate > 0 || v._cleared).slice().reverse();
+      document.getElementById('visited-count').textContent = src2.filter(v => v.rate > 0).length;
+      if (!src2.length) {
         wrap.innerHTML = '<div class="visited-empty">아직 기록이 없어요. 다녀온 식당을 클릭해 \'🍚 다녀왔어요\'로 남겨보세요.</div>';
         return;
       }
-      const entries = Object.values(by)
-        .map(a => a.sort((x, y) => y.date.localeCompare(x.date)))
-        .sort((a, b) => b[0].date.localeCompare(a[0].date));
-      wrap.innerHTML = entries.map(a => {
-        const v = a[0];
+      wrap.innerHTML = src2.map(v => {
         const meta = v.rate > 0
           ? `${v.comment || v.menu || ''} · ${v.date}`
           : '별점을 지웠어요 — 페이지를 나가면 목록에서 사라집니다';
