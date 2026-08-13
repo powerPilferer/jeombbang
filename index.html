@@ -245,7 +245,6 @@
           ${place.tel ? `<a class="detail-tel" href="tel:${place.tel.replace(/-/g, '')}">📞 ${place.tel}</a>` : ''}
           <a class="detail-naver" href="${place.naver || 'https://map.naver.com/p/search/' + encodeURIComponent(place.name + ' 충무로')}" target="_blank" rel="noopener">🗺 네이버지도</a>
         </div>
-        ${renderVisits(place.id)}
         <button type="button" class="visit-btn" id="visit-btn">🍚 다녀왔어요 — 기록 남기기</button>
         <div class="visit-form" id="visit-form" hidden>
           <div class="star-row" id="rate-row">
@@ -279,7 +278,9 @@
       try {
         const d = await fetch(VISIT_URL, { cache: 'no-store' }).then(r => r.json());
         if (d.ok) {
-          visits = d.list.map(v => ({ ...v, date: normDate(v.date) }));
+          const byId = {};
+          d.list.forEach(v => { byId[v.id] = { ...v, date: normDate(v.date) }; });  // 같은 가게는 마지막 기록만
+          visits = Object.values(byId);
           localStorage.setItem(VKEY, JSON.stringify(visits));
           renderList();
           renderVisitedList();
@@ -352,9 +353,12 @@
       }));
       document.getElementById('visit-save').addEventListener('click', () => {
         if (!rate) { alert('별점을 골라주세요!'); return; }
+        if (visitsOf(place.id).length &&
+            !confirm(`"${place.name}"은 이미 기록이 있어요.\n마지막 기록을 지금 내용으로 업데이트할까요?`)) return;
         const comment = document.getElementById('visit-comment').value.trim();
         const rec = { id: place.id, name: place.name, menu: place.menu, rate, comment,
                       date: new Date().toISOString().slice(0, 10) };
+        visits = visits.filter(v => v.id !== place.id);   // 가게당 1건 — 이전 기록 대체
         visits.push(rec);
         localStorage.setItem(VKEY, JSON.stringify(visits));
         fetch(VISIT_URL, { method: 'POST', mode: 'no-cors',
@@ -385,7 +389,7 @@
         return `<button type="button" class="visit-card visited-row" data-id="${v.id}">
           <span class="v-stars">${starsHtml(v.rate)}</span>
           <strong class="v-name">${v.name}</strong>
-          <span class="v-meta">${v.comment || v.menu || ''} · ${v.date}${n > 1 ? ` · ${n}회 방문` : ''}</span></button>`;
+          <span class="v-meta">${v.comment || v.menu || ''} · ${v.date}</span></button>`;
       }).join('');
       wrap.querySelectorAll('.visited-row').forEach(b => b.addEventListener('click', () => {
         const pl = places.find(x => x.id === b.dataset.id);
