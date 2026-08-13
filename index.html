@@ -81,9 +81,12 @@
       border: 0; border-left: 4px solid var(--accent); border-radius: 12px; background: #fff;
       cursor: pointer; text-align: left; color: inherit; box-shadow: 0 3px 10px rgba(59,45,27,.07); transition: .15s ease; }
     .visit-card:hover { transform: translateX(2px); box-shadow: 0 5px 16px rgba(59,45,27,.12); }
-    .visit-card .v-stars { font-size: 15px; letter-spacing: 1.5px; line-height: 1; }
-    .visit-card .v-stars .on { color: #f2a33c; }
-    .visit-card .v-stars .off { color: #ded5c7; }
+    .visit-card .v-stars { line-height: 1; display: flex; }
+    .visit-card .vstar { font-size: 19px; color: #ded5c7; cursor: pointer; padding: 2px 2px; transition: transform .1s; }
+    .visit-card .vstar:hover { transform: scale(1.2); }
+    .visit-card .vstar.on { color: #f2a33c; }
+    .visit-card .vstar.half { background: linear-gradient(90deg, #f2a33c 50%, #ded5c7 50%);
+      -webkit-background-clip: text; background-clip: text; color: transparent; }
     .visit-card .v-name { font-size: 14px; font-weight: 800; margin-top: 2px; }
     .visit-card .v-meta { color: var(--muted); font-size: 11.5px; line-height: 1.4; }
     .visit-card .del { position: absolute; top: 10px; right: 10px; }
@@ -267,7 +270,7 @@
     const VKEY = 'jb-visited-v2';
     let visits = [];                        // 서버(구글시트) 기록 — 모든 기기에서 공유
     try { visits = JSON.parse(localStorage.getItem(VKEY)) || []; } catch (e) {}   // 오프라인 캐시
-    function visitsOf(id) { return visits.filter(v => v.id === id).slice().reverse(); }
+    function visitsOf(id) { return visits.filter(v => v.id === id && v.rate > 0).slice().reverse(); }
     function normDate(s) {
       const m = String(s).match(/\d{4}-\d{2}-\d{2}/);
       if (m) return m[0];
@@ -307,6 +310,33 @@
     const RATE_EMOJI = { '최고': '😋', '좋음': '👍', '보통': '😐', '별로': '👎' };  // 옛 기록 호환용
     const STAR_WORDS = { 1: '별로였어요', 2: '아쉬워요', 3: '보통', 4: '좋았어요', 5: '또 가고 싶다!' };
     function rateBadge(r) { return typeof r === 'number' ? '★' + r : (RATE_EMOJI[r] || '🍚'); }
+    function starCells(id, rate) {
+      let h = '';
+      for (let i = 1; i <= 5; i++) {
+        const cls = rate >= i ? 'on' : (rate >= i - 0.5 ? 'half' : '');
+        h += `<span class="vstar ${cls}" data-id="${id}" data-v="${i}">★</span>`;
+      }
+      return h;
+    }
+    function rerate(el, e) {
+      const id = el.dataset.id;
+      const cur = visits.find(v => v.id === id);
+      if (!cur) return;
+      const rect = el.getBoundingClientRect();
+      const leftHalf = (e.clientX - rect.left) < rect.width / 2;
+      let newRate = Number(el.dataset.v) - (leftHalf ? 0.5 : 0);
+      if (Math.abs((cur.rate || 0) - newRate) < 0.001) newRate = 0;   // 같은 점수 한 번 더 → 취소
+      cur.rate = newRate;
+      cur.date = new Date().toISOString().slice(0, 10);
+      if (newRate === 0) cur._cleared = true;
+      localStorage.setItem(VKEY, JSON.stringify(visits));
+      fetch(VISIT_URL, { method: 'POST', mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ id, name: cur.name, menu: cur.menu || '', rate: newRate,
+                               comment: cur.comment || '', date: cur.date }) }).catch(() => {});
+      renderList();
+      renderVisitedList();
+    }
     function starsHtml(r) {
       if (typeof r !== 'number') r = ({ '최고': 5, '좋음': 4, '보통': 3, '별로': 1 })[r] || 0;
       const full = Math.floor(r), half = r % 1 >= 0.5;
@@ -374,8 +404,9 @@
     function renderVisitedList() {
       const wrap = document.getElementById('visited-list');
       const by = {};
-      visits.forEach(v => { (by[v.id] = by[v.id] || []).push(v); });
-      document.getElementById('visited-count').textContent = Object.keys(by).length;
+      visits.filter(v => v.rate > 0 || v._cleared).forEach(v => { (by[v.id] = by[v.id] || []).push(v); });
+      document.getElementById('visited-count').textContent =
+        Object.values(by).filter(a => a[0].rate > 0 || a.some(x => x.rate > 0)).length;
       if (!visits.length) {
         wrap.innerHTML = '<div class="visited-empty">아직 기록이 없어요. 다녀온 식당을 클릭해 \'🍚 다녀왔어요\'로 남겨보세요.</div>';
         return;
@@ -384,12 +415,19 @@
         .map(a => a.sort((x, y) => y.date.localeCompare(x.date)))
         .sort((a, b) => b[0].date.localeCompare(a[0].date));
       wrap.innerHTML = entries.map(a => {
-        const v = a[0]; const n = a.length;
+        const v = a[0];
+        const meta = v.rate > 0
+          ? `${v.comment || v.menu || ''} · ${v.date}`
+          : '별점을 지웠어요 — 페이지를 나가면 목록에서 사라집니다';
         return `<button type="button" class="visit-card visited-row" data-id="${v.id}">
-          <span class="v-stars">${starsHtml(v.rate)}</span>
+          <span class="v-stars">${starCells(v.id, v.rate)}</span>
           <strong class="v-name">${v.name}</strong>
-          <span class="v-meta">${v.comment || v.menu || ''} · ${v.date}</span></button>`;
+          <span class="v-meta">${meta}</span></button>`;
       }).join('');
+      wrap.querySelectorAll('.vstar').forEach(s => s.addEventListener('click', e => {
+        e.stopPropagation();
+        rerate(s, e);
+      }));
       wrap.querySelectorAll('.visited-row').forEach(b => b.addEventListener('click', () => {
         const pl = places.find(x => x.id === b.dataset.id);
         if (pl) selectPlace(pl.id, true);
