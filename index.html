@@ -84,7 +84,6 @@
       border-radius: 50%; background: rgba(239,91,63,.1); font-size: 14px; font-weight: 900; color: var(--accent-dark); }
     .visit-card strong { display: block; font-size: 13.5px; }
     .visit-card span { display: block; margin-top: 2px; color: var(--muted); font-size: 11.5px; line-height: 1.4; }
-    .export-bar { position: fixed; right: 20px; bottom: 20px; z-index: 600; padding: 11px 16px; border: 0; border-radius: 999px; background: var(--ink); color: #fff; font-weight: 800; font-size: 13px; cursor: pointer; box-shadow: var(--shadow); display: none; }
     .detail-tel { color: var(--green); font-weight: 800; font-size: 13px; text-decoration: none; }
     .detail-naver { color: #03c75a; font-weight: 800; font-size: 13px; text-decoration: none; }
     .filters { display: flex; gap: 7px; flex-wrap: wrap; }
@@ -173,7 +172,6 @@
       <div id="map"></div>
     </section>
   </main>
-  <button type="button" class="export-bar" id="export-bar">방문기록 저장</button>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script>
@@ -260,14 +258,25 @@
         </div>`;
       panel.hidden = false;
       wireVisitForm(place);
-      updateExportBar();
     }
 
     // ── 방문 기록 (모아 찜과 같은 흐름: localStorage → 내보내기 → 점빵이가 다음 실행 때 반영)
-    const VKEY = 'jb-visited';
-    function loadVisits() { try { return JSON.parse(localStorage.getItem(VKEY)) || []; } catch (e) { return []; } }
-    function saveVisitsRaw(v) { localStorage.setItem(VKEY, JSON.stringify(v)); }
-    function visitsOf(id) { return loadVisits().filter(v => v.id === id); }
+    const VISIT_URL = 'https://script.google.com/macros/s/AKfycbz9R7UdoPS5dytDBHvZosK7N1cw9ba1L1afdZpDlJ3AuUPpIviG_wF3y_9A5Dw7yFxS9A/exec';
+    const VKEY = 'jb-visited-v2';
+    let visits = [];                        // 서버(구글시트) 기록 — 모든 기기에서 공유
+    try { visits = JSON.parse(localStorage.getItem(VKEY)) || []; } catch (e) {}   // 오프라인 캐시
+    function visitsOf(id) { return visits.filter(v => v.id === id).slice().reverse(); }
+    async function syncVisits() {
+      try {
+        const d = await fetch(VISIT_URL, { cache: 'no-store' }).then(r => r.json());
+        if (d.ok) {
+          visits = d.list;
+          localStorage.setItem(VKEY, JSON.stringify(visits));
+          renderList();
+          renderVisitedList();
+        }
+      } catch (e) { /* 오프라인 — 캐시로 표시 */ }
+    }
     const RATE_EMOJI = { '최고': '😋', '좋음': '👍', '보통': '😐', '별로': '👎' };  // 옛 기록 호환용
     const STAR_WORDS = { 1: '별로였어요', 2: '아쉬워요', 3: '보통', 4: '좋았어요', 5: '또 가고 싶다!' };
     function rateBadge(r) { return typeof r === 'number' ? '★' + r : (RATE_EMOJI[r] || '🍚'); }
@@ -311,22 +320,19 @@
       document.getElementById('visit-save').addEventListener('click', () => {
         if (!rate) { alert('별점을 골라주세요!'); return; }
         const comment = document.getElementById('visit-comment').value.trim();
-        const v = loadVisits();
-        v.push({ id: place.id, name: place.name, menu: place.menu, rate, comment,
-                 date: new Date().toISOString().slice(0, 10) });
-        saveVisitsRaw(v);
+        const rec = { id: place.id, name: place.name, menu: place.menu, rate, comment,
+                      date: new Date().toISOString().slice(0, 10) };
+        visits.push(rec);
+        localStorage.setItem(VKEY, JSON.stringify(visits));
+        fetch(VISIT_URL, { method: 'POST', mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(rec) }).catch(() => {});
         renderList();
         renderVisitedList();
         renderDetail(place);
       });
     }
 
-    function updateExportBar() {
-      const n = loadVisits().length;
-      const bar = document.getElementById('export-bar');
-      bar.style.display = n ? 'block' : 'none';
-      bar.textContent = `방문기록 저장 (${n})`;
-    }
 
     function renderVisitedList() {
       const wrap = document.getElementById('visited-list');
@@ -371,14 +377,6 @@
       panel.hidden = false;
     }
 
-    document.getElementById('export-bar').addEventListener('click', () => {
-      const blob = new Blob([JSON.stringify({ visits: loadVisits() }, null, 1)], { type: 'application/json' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = '점빵이-방문.json';
-      a.click();
-      URL.revokeObjectURL(a.href);
-    });
 
     function selectPlace(id, moveMap = true) {
       const place = places.find(p => p.id === id);
@@ -396,19 +394,10 @@
       });
     });
     document.querySelector('[data-focus]').addEventListener('click', event => selectPlace(event.currentTarget.dataset.focus, true));
-    // 옛 이모지 기록 → 별점 자동 환산 (한 번 열면 영구 변환됨)
-    (function migrateLegacyRates() {
-      const LEGACY = { '최고': 5, '좋음': 4, '보통': 3, '별로': 1 };
-      const v = loadVisits();
-      let changed = false;
-      v.forEach(r => {
-        if (typeof r.rate !== 'number' && LEGACY[r.rate]) { r.rate = LEGACY[r.rate]; changed = true; }
-      });
-      if (changed) saveVisitsRaw(v);
-    })();
 
     renderList();
     renderVisitedList();
+    syncVisits();
     setTimeout(() => selectPlace('jingogae', false), 450);
   </script>
 </body>
