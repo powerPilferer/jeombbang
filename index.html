@@ -216,9 +216,23 @@
     const list = document.getElementById('place-list');
     let activeFilter = 'all';
 
+    function applyVisitedFilter() {
+      // 방문 기록이 있는 가게는 지도 핀도 숨긴다 (별점을 지우면 다시 나타남)
+      places.forEach(pl => {
+        const hidden = visitsOf(pl.id).length > 0 && !pl.today;
+        const mk = markers.get(pl.id);
+        if (!mk) return;
+        if (hidden && map.hasLayer(mk)) map.removeLayer(mk);
+        if (!hidden && !map.hasLayer(mk)) mk.addTo(map);
+      });
+    }
+
     function renderList() {
       list.innerHTML = '';
-      places.filter(p => activeFilter === 'all' || p.category === activeFilter).forEach(place => {
+      places
+        .filter(p => p.today || !visitsOf(p.id).length)   // 가본 곳은 후보에서 제외
+        .filter(p => activeFilter === 'all' || p.category === activeFilter)
+        .forEach(place => {
         const button = document.createElement('button');
         button.type = 'button';
         button.className = `place ${place.today ? 'active' : ''}`;
@@ -228,6 +242,7 @@
         button.addEventListener('click', () => selectPlace(place.id, true));
         list.appendChild(button);
       });
+      applyVisitedFilter();
     }
 
     function renderDetail(place) {
