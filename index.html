@@ -137,20 +137,20 @@
         </div>
       </header>
 
-      <div class="date">2026년 8월 13일 수요일 · 저녁 추천</div>
+      <div class="date">2026년 8월 14일 목요일 · 저녁 추천</div>
       <section class="hero">
         <div class="hero-top">
           <span class="badge">오늘의 추천</span>
-          <small>저녁 영업 17:00 시작</small>
+          <small>17시 영업 중 · L.O 20:30</small>
         </div>
-        <h2>진고개</h2>
-        <p class="menu">갈비탕 · 15,000원</p>
+        <h2>포언</h2>
+        <p class="menu">분짜 · 14,000원</p>
         <div class="facts">
-          <div class="fact"><strong>약 5분</strong><span>충무로역에서</span></div>
+          <div class="fact"><strong>약 4분</strong><span>충무로역에서</span></div>
           <div class="fact"><strong>21:00</strong><span>영업 종료</span></div>
-          <div class="fact"><strong>한식</strong><span>오늘의 장르</span></div>
+          <div class="fact"><strong>아시아식</strong><span>오늘의 장르</span></div>
         </div>
-        <button type="button" data-focus="jingogae">지도에서 보기</button>
+        <button type="button" data-focus="phoeon">지도에서 보기</button>
       </section>
 
       <section class="detail" id="detail" hidden></section>
@@ -158,10 +158,10 @@
       <h2 class="section-title">근처 후보</h2>
       <div class="filters" aria-label="음식 종류 필터">
         <button class="filter active" data-filter="all">전체</button>
+        <button class="filter" data-filter="아시아">아시아</button>
         <button class="filter" data-filter="고기">고기</button>
         <button class="filter" data-filter="국물">국물</button>
         <button class="filter" data-filter="돈까스">돈까스</button>
-        <button class="filter" data-filter="함박">함박</button>
         <button class="filter" data-filter="중식">중식</button>
         <button class="filter" data-filter="카레">카레</button>
       </div>
@@ -182,12 +182,11 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script>
     const places = [
-      { id: 'jingogae', name: '진고개', category: '국물', menu: '갈비탕', price: 15000, hours: '11:00–21:00 · 휴식 15:00–17:00 · 일요일 휴무', walk: '도보 약 5분', tel: '02-2267-0955', note: '1963년 개업한 충무로 한식 노포 · 육개장 14,000원 · 물냉면 13,000원 · 갈비찜정식 24,000원은 예산 초과', lat: 37.5630127, lng: 126.9928333, today: true },
+      { id: 'phoeon', name: '포언', category: '아시아', menu: '분짜', price: 14000, hours: '매일 11:00–21:00 · L.O 20:30 · 휴무 없음', walk: '도보 약 4분', tel: '0507-1406-3996', note: '베트남 쌀국수 전문점 · 양지차돌쌀국수 11,000원 · 반쎄오 후기 좋음 · 브레이크타임은 다이닝코드 기준 없음(일부 후기 15:00–16:30 표기)이나 어느 쪽이든 17시는 영업 중', lat: 37.5623854, lng: 126.9917454, today: true },
+      { id: 'jingogae', name: '진고개', category: '국물', menu: '갈비탕', price: 15000, hours: '11:00–21:00 · 휴식 15:00–17:00 · 일요일 휴무', walk: '도보 약 5분', tel: '02-2267-0955', note: '1963년 개업한 충무로 한식 노포 · 육개장 14,000원 · 물냉면 13,000원 · 갈비찜정식 24,000원은 예산 초과', lat: 37.5630127, lng: 126.9928333 },
       { id: 'tsuyakatsu', name: '츠야카츠 충무로본점', category: '돈까스', menu: '안심돈까스정식', price: 13900, hours: '11:00–21:00 · 휴식 15:00–17:00 · L.O 20:30', walk: '도보 약 4분', tel: '0507-1332-0253', lat: 37.5625066, lng: 126.9921619 },
       { id: 'jjukkumi', name: '충무로쭈꾸미불고기', category: '고기', menu: '쭈꾸미 불고기', price: 18000, hours: '12:00–22:00 · 브레이크 없음 · 일요일 휴무', walk: '도보 약 3분', tel: '02-2279-0803', lat: 37.5617290, lng: 126.9921675 },
-      { id: 'pildonghambak', name: '필동함박 충무로 본점', category: '함박', menu: '투움바 함박 스테이크', price: 13500, hours: '매일 10:30–21:00 · L.O 20:15 · 브레이크타임 표기 없음', walk: '도보 약 3분', tel: '0507-1401-6608', note: '백종원 골목식당 출연 · 주차 불가 · 점심시간 웨이팅 후기 있음', lat: 37.5608512, lng: 126.9962685 },
       { id: 'chungpu', name: '충푸', category: '중식', menu: '유린기', price: 19000, hours: '평일 11:00–22:00 · 휴식 15:00 무렵–17:00(출처별 14:30 표기도 있음) · L.O 21:00 · 토 17:00–22:00 · 일 휴무', walk: '도보 약 2분 (8번 출구)', tel: '0507-1396-9914', note: '2024년 9월 오픈한 중식 다이닝 · 매장이 작아 웨이팅 가능 · 점심·저녁 메뉴 구분', lat: 37.5624231, lng: 126.9951264 },
-      { id: 'hwangpyeong', name: '황평집', category: '국물', menu: '닭곰탕', price: 9000, hours: '11:00–21:30 · 휴식 15:30–17:00(~17:30 표기도 있음) · 일 휴무', walk: '도보 약 9분', tel: '02-2266-6875', note: '브레이크 종료가 출처별 17:00/17:30으로 달라 5시 정각 입장은 방문 전 확인', lat: 37.5640375, lng: 126.9961226 },
       { id: 'chungmucurry', name: '충무커리', category: '카레', menu: '치킨윙토마토커리', price: 12900, hours: '평일 11:00–20:00 · 휴식 14:30–17:00 · L.O 19:30 · 토·일 휴무', walk: '도보 약 7분', tel: '010-3762-5379', note: '르 꼬르동 블루 출신 셰프의 일본식 수제 카레 · 2층 소규모 매장(약 15석) · 키오스크 주문 · 주차 불가', lat: 37.5630091, lng: 126.9913932 }
     ];
 
@@ -496,7 +495,7 @@
     renderList();
     renderVisitedList();
     syncVisits();
-    setTimeout(() => selectPlace('jingogae', false), 450);
+    setTimeout(() => selectPlace('phoeon', false), 450);
   </script>
 </body>
 </html>
