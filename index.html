@@ -42,6 +42,9 @@
     .fact strong { font-size: 14px; }
     .fact span { margin-top: 2px; color: rgba(255, 255, 255, .6); font-size: 11px; }
     .hero button { width: 100%; margin-top: 15px; padding: 12px; border: 0; border-radius: 14px; color: var(--ink); background: #fff; font-weight: 800; cursor: pointer; }
+    .hero .re-pick { margin-top: 8px; background: transparent; border: 1.5px dashed rgba(255,255,255,.45);
+      color: rgba(255,255,255,.9); font-weight: 700; font-size: 13.5px; }
+    .hero .re-pick:hover { border-color: rgba(255,255,255,.8); }
     .section-title { margin: 25px 2px 10px; font-size: 14px; }
     .detail { margin-top: 12px; padding: 18px 20px; border: 1px solid var(--line); border-radius: 20px; background: #fff; box-shadow: 0 8px 24px rgba(59,45,27,.08); }
     .detail-kicker { color: var(--accent-dark); font-size: 11px; font-weight: 800; letter-spacing: .08em; }
@@ -151,6 +154,7 @@
           <div class="fact"><strong>아시아식</strong><span>오늘의 장르</span></div>
         </div>
         <button type="button" data-focus="phoeon">지도에서 보기</button>
+        <button type="button" class="re-pick" id="re-pick">🔄 다른 곳 추천받기</button>
       </section>
 
       <section class="detail" id="detail" hidden></section>
@@ -506,6 +510,56 @@
       });
     });
     document.querySelector('[data-focus]').addEventListener('click', event => selectPlace(event.currentTarget.dataset.focus, true));
+
+    // ── 다시 추천하기: 오늘 검증된 후보 안에서 순환 (이 기기에만 기억, 자정 지나면 원래대로)
+    const heroEl = document.querySelector('.hero');
+    const heroRefs = {
+      badge: heroEl.querySelector('.badge'),
+      small: heroEl.querySelector('.hero-top small'),
+      h2: heroEl.querySelector('h2'),
+      menu: heroEl.querySelector('.menu'),
+      facts: heroEl.querySelectorAll('.fact'),
+      goBtn: heroEl.querySelector('[data-focus]')
+    };
+    const origTodayId = (places.find(pl => pl.today) || {}).id;
+    const origSmall = heroRefs.small ? heroRefs.small.textContent : '';
+    function closeTimeOf(h) {
+      const m = String(h || '').match(/[–\-~]\s*(\d{1,2}:\d{2})/);
+      return m ? m[1] : '확인';
+    }
+    function renderHero(pl, isAlt) {
+      heroRefs.badge.textContent = isAlt ? '다시 추천' : '오늘의 추천';
+      if (heroRefs.small) {
+        const orig = places.find(x => x.id === origTodayId);
+        heroRefs.small.textContent = isAlt ? `원래 추천 · ${orig ? orig.name : ''}` : origSmall;
+      }
+      heroRefs.h2.textContent = pl.name;
+      heroRefs.menu.textContent = `${pl.menu} · ${pl.price.toLocaleString()}원`;
+      const f = heroRefs.facts;
+      if (f[0]) f[0].querySelector('strong').textContent = pl.walk.replace('도보 ', '');
+      if (f[1]) f[1].querySelector('strong').textContent = closeTimeOf(pl.hours);
+      if (f[2]) f[2].querySelector('strong').textContent = pl.category;
+      heroRefs.goBtn.dataset.focus = pl.id;
+      selectPlace(pl.id, true);
+    }
+    function repick() {
+      const pool = places.filter(pl => !visitsOf(pl.id).length);
+      if (pool.length < 2) { alert('바꿔 드릴 후보가 부족해요!'); return; }
+      const curId = heroRefs.goBtn.dataset.focus;
+      const idx = pool.findIndex(pl => pl.id === curId);
+      const next = pool[(idx + 1) % pool.length];
+      localStorage.setItem('jb-repick', JSON.stringify({ date: new Date().toISOString().slice(0, 10), id: next.id }));
+      renderHero(next, next.id !== origTodayId);
+    }
+    document.getElementById('re-pick').addEventListener('click', repick);
+    // 오늘 재추천 상태 복원
+    try {
+      const rp = JSON.parse(localStorage.getItem('jb-repick'));
+      if (rp && rp.date === new Date().toISOString().slice(0, 10) && rp.id !== origTodayId) {
+        const pl = places.find(x => x.id === rp.id);
+        if (pl && !visitsOf(pl.id).length) renderHero(pl, true);
+      }
+    } catch (e) {}
 
     renderList();
     renderVisitedList();
