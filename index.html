@@ -18,6 +18,7 @@
       --card: #17171c;           /* 카드 배경 (모아 다크) */
       --chip: #22222a;
       --line: #26262e;
+      --sel: #2c2c36;            /* 선택 상태 배경 — 카드보다 살짝만 밝게 */
       --accent: #f4694c;         /* 점빵이 코랄 — 다크용으로 한 단계 밝게 */
       --accent-dark: #ff9a82;    /* 다크 배경 위 코랄 텍스트용 */
       --green: #4fae86;
@@ -108,17 +109,15 @@
     .detail-naver { color: #03c75a; font-weight: 800; font-size: 13px; text-decoration: none; }
     .filters { display: flex; gap: 7px; flex-wrap: wrap; }
     .filter { padding: 8px 12px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); background: var(--chip); cursor: pointer; }
-    .filter.active { border-color: var(--accent); color: #fff; background: var(--accent); }
+    .filter.active { border-color: var(--accent); color: #fff; background: var(--sel); }
     .list { display: grid; gap: 9px; }
     /* 후보 리스트 — 기본은 배경보다 살짝만 밝게 톤 다운, 선택된 것만 베이지로 밝게 */
     .place { width: 100%; display: grid; grid-template-columns: 1fr auto; gap: 10px; padding: 14px 15px; border: 1px solid transparent; border-radius: 18px; text-align: left; color: var(--ink); background: #1a1a20; cursor: pointer; transition: .2s ease; }
     .place:hover { border-color: rgba(244,105,76,.45); background: #22222a; transform: translateY(-1px); }
-    .place.active { border-color: var(--accent); background: #ece1cb; color: #2b2416; transform: translateY(-1px); }
+    .place.active { border-color: var(--accent); background: var(--sel); transform: translateY(-1px); }
     .place strong { display: block; margin-bottom: 4px; }
     .place span { color: var(--muted); font-size: 12px; }
     .place .price { color: var(--accent-dark); font-weight: 800; }
-    .place.active span { color: #8a7c5e; }
-    .place.active .price { color: #b74424; }
     .map-shell { position: relative; min-width: 0; background: var(--paper); }
     /* 카카오맵은 다크 스타일이 없어 색반전+색상회전으로 어둡게 만들고, 오버레이(핀·팝업)는 역필터로 원색 복원 */
     #map { width: 100%; height: 100%; background: #ececec; filter: invert(1) hue-rotate(180deg) saturate(.8) brightness(.94) contrast(1.03); }
