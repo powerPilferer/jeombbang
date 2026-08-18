@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>점빵이 맛지도</title>
   <link rel="preconnect" href="https://unpkg.com">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <style>
     :root {
       --ink: #25231f;
@@ -109,9 +108,9 @@
     #map { width: 100%; height: 100%; background: #e9e2d6; }
     .map-title { position: absolute; z-index: 450; top: 22px; left: 24px; display: flex; align-items: center; gap: 10px; padding: 11px 14px; border: 1px solid rgba(255,255,255,.8); border-radius: 16px; background: var(--panel); box-shadow: var(--shadow); font-size: 13px; font-weight: 800; }
     .map-title i { width: 9px; height: 9px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 5px rgba(51,123,92,.15); }
-    .leaflet-control-attribution { font-size: 9px; }
-    .leaflet-popup-content-wrapper { border-radius: 18px; box-shadow: var(--shadow); }
-    .leaflet-popup-content { width: 230px !important; margin: 15px 17px; }
+    .kpopup { position: relative; width: 230px; padding: 15px 17px 14px; background: #fff; border-radius: 18px; box-shadow: var(--shadow); font-size: 13px; }
+    .kpopup::after { content: ''; position: absolute; left: 50%; bottom: -7px; width: 15px; height: 15px; background: #fff; transform: translateX(-50%) rotate(45deg); border-radius: 3px; }
+    .kpopup .kclose { position: absolute; top: 9px; right: 11px; border: 0; background: none; padding: 2px; color: var(--muted); font-size: 13px; cursor: pointer; }
     .popup-kicker { color: var(--accent-dark); font-size: 11px; font-weight: 800; }
     .popup-title { margin: 4px 0; font-size: 17px; font-weight: 800; }
     .popup-copy { margin: 0; color: var(--muted); line-height: 1.5; }
@@ -184,16 +183,16 @@
     </section>
   </main>
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=e5a99ebf63e22edde31aa748643ad249"></script>
   <script>
     // 지역 모드 — 점빵이가 매일 갱신. 평일: chungmuro / 주말·공휴일: maseok
     const REGIONS = {
       chungmuro: { eyebrow: 'CHUNGMURO FOOD MAP', mapTitle: '충무로역 도보 10분 맛지도',
-                   center: [37.5619, 126.9946], zoom: 16,
+                   center: [37.5619, 126.9946], level: 4,
                    station: { name: '충무로역', lat: 37.5612, lng: 126.9941 },
                    from: '충무로역에서', naver: '충무로' },
       maseok:    { eyebrow: 'NAMYANGJU FOOD MAP', mapTitle: '남양주 맛지도',
-                   center: [37.6523, 127.3119], zoom: 12,
+                   center: [37.6523, 127.3119], level: 8,
                    station: { name: '마석역', lat: 37.6523223, lng: 127.3118672 },
                    from: '마석역에서', naver: '남양주' }
     };
@@ -210,27 +209,50 @@
       { id: 'jjukkumi', name: '충무로쭈꾸미불고기', category: '고기', menu: '쭈꾸미 불고기', price: 18000, hours: '12:00–22:00 · 브레이크 없음 · 일요일 휴무', walk: '도보 약 3분', tel: '02-2279-0803', lat: 37.5617290, lng: 126.9921675 }
     ];
 
-    const map = L.map('map', { zoomControl: false }).setView(REGION.center, REGION.zoom);
-    L.control.zoom({ position: 'bottomright' }).addTo(map);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
+    const map = new kakao.maps.Map(document.getElementById('map'), {
+      center: new kakao.maps.LatLng(REGION.center[0], REGION.center[1]),
+      level: REGION.level
+    });
+    map.addControl(new kakao.maps.ZoomControl(), kakao.maps.ControlPosition.BOTTOMRIGHT);
 
-    const stationIcon = L.divIcon({ className: '', html: '<div class="station-pin">역</div>', iconSize: [22, 22], iconAnchor: [11, 11] });
-    L.marker([REGION.station.lat, REGION.station.lng], { icon: stationIcon, zIndexOffset: 1000 }).addTo(map).bindTooltip(REGION.station.name, { direction: 'top' });
+    const stationEl = document.createElement('div');
+    stationEl.className = 'station-pin';
+    stationEl.title = REGION.station.name;
+    stationEl.textContent = '역';
+    new kakao.maps.CustomOverlay({
+      map, position: new kakao.maps.LatLng(REGION.station.lat, REGION.station.lng),
+      content: stationEl, yAnchor: 0.5, zIndex: 5
+    });
+
+    // 팝업 — 오버레이 하나를 재사용한다
+    const popupOv = new kakao.maps.CustomOverlay({ yAnchor: 1.35, zIndex: 30 });
+    function closePopup() { popupOv.setMap(null); }
+    kakao.maps.event.addListener(map, 'click', closePopup);
+    function openPopupFor(place) {
+      const el = document.createElement('div');
+      el.className = 'kpopup';
+      el.innerHTML = `<button type="button" class="kclose" aria-label="닫기">✕</button>
+        <div class="popup-kicker">${place.today ? '오늘의 추천' : place.category}</div>
+        <div class="popup-title">${place.name}</div>
+        <p class="popup-copy">${place.menu} · ${place.price.toLocaleString()}원<br>${place.walk}<br>${place.hours}</p>`;
+      el.querySelector('.kclose').addEventListener('click', closePopup);
+      popupOv.setContent(el);
+      popupOv.setPosition(new kakao.maps.LatLng(place.lat, place.lng));
+      popupOv.setMap(map);
+    }
 
     const markers = new Map();
     places.forEach((place, index) => {
-      const icon = L.divIcon({
-        className: '',
-        html: `<div class="pin ${place.today ? 'today' : ''}"><span>${index + 1}</span></div>`,
-        iconSize: [40, 40], iconAnchor: [20, 36], popupAnchor: [0, -34]
+      const el = document.createElement('div');
+      el.className = `pin ${place.today ? 'today' : ''}`;
+      el.style.cursor = 'pointer';
+      el.innerHTML = `<span>${index + 1}</span>`;
+      el.addEventListener('click', () => selectPlace(place.id, false));
+      const ov = new kakao.maps.CustomOverlay({
+        map, position: new kakao.maps.LatLng(place.lat, place.lng),
+        content: el, yAnchor: 0.9, zIndex: place.today ? 20 : 10
       });
-      const popup = `<div class="popup-kicker">${place.today ? '오늘의 추천' : place.category}</div><div class="popup-title">${place.name}</div><p class="popup-copy">${place.menu} · ${place.price.toLocaleString()}원<br>${place.walk}<br>${place.hours}</p>`;
-      const marker = L.marker([place.lat, place.lng], { icon }).addTo(map).bindPopup(popup);
-      marker.on('click', () => selectPlace(place.id, false));
-      markers.set(place.id, marker);
+      markers.set(place.id, ov);
     });
 
     const list = document.getElementById('place-list');
@@ -242,8 +264,8 @@
         const hidden = visitsOf(pl.id).length > 0 && !pl.today;
         const mk = markers.get(pl.id);
         if (!mk) return;
-        if (hidden && map.hasLayer(mk)) map.removeLayer(mk);
-        if (!hidden && !map.hasLayer(mk)) mk.addTo(map);
+        if (hidden && mk.getMap()) mk.setMap(null);
+        if (!hidden && !mk.getMap()) mk.setMap(map);
       });
     }
 
@@ -513,8 +535,11 @@
     function selectPlace(id, moveMap = true) {
       const place = places.find(p => p.id === id);
       document.querySelectorAll('.place').forEach(el => el.classList.toggle('active', el.dataset.id === id));
-      if (moveMap) map.flyTo([place.lat, place.lng], 17, { duration: .65 });
-      markers.get(id).openPopup();
+      if (moveMap) {
+        if (map.getLevel() > 3) map.setLevel(3);
+        map.panTo(new kakao.maps.LatLng(place.lat, place.lng));
+      }
+      openPopupFor(place);
       renderDetail(place);
     }
 
