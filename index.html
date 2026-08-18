@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>점빵이 맛지도 · 충무로</title>
+  <title>점빵이 맛지도</title>
   <link rel="preconnect" href="https://unpkg.com">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <style>
@@ -178,7 +178,7 @@
       </section>
     </aside>
 
-    <section class="map-shell" aria-label="충무로 맛집 지도">
+    <section class="map-shell" aria-label="맛집 지도">
       <div class="map-title"><i></i> 충무로역 도보 10분 맛지도</div>
       <div id="map"></div>
     </section>
@@ -186,6 +186,21 @@
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script>
+    // 지역 모드 — 점빵이가 매일 갱신. 평일: chungmuro / 주말·공휴일: maseok
+    const REGIONS = {
+      chungmuro: { eyebrow: 'CHUNGMURO FOOD MAP', mapTitle: '충무로역 도보 10분 맛지도',
+                   center: [37.5619, 126.9946], zoom: 16,
+                   station: { name: '충무로역', lat: 37.5612, lng: 126.9941 },
+                   from: '충무로역에서', naver: '충무로' },
+      maseok:    { eyebrow: 'MASEOK FOOD MAP', mapTitle: '마석 인근 맛지도',
+                   center: [37.6523, 127.3119], zoom: 13,
+                   station: { name: '마석역', lat: 37.6523223, lng: 127.3118672 },
+                   from: '마석역에서', naver: '남양주' }
+    };
+    const REGION = REGIONS.chungmuro;
+    document.querySelector('.eyebrow').textContent = REGION.eyebrow;
+    document.querySelector('.map-title').innerHTML = '<i></i> ' + REGION.mapTitle;
+
     const places = [
       { id: 'heungnam', name: '오장동흥남집 본점', category: '면', menu: '회비빔냉면', price: 15000, hours: '11:00–20:30 · L.O 20:00 · 브레이크 없음 · 수요일 휴무 — 월요일 영업 확인(2026-08-17)', walk: '도보 약 10분', tel: '02-2266-0735', note: '1953년 개업, 4대째 잇는 함흥냉면 노포 · 물냉면·고기비빔·섞임냉면 각 15,000원 · 100% 고구마 전분 면 · 2인 이상 묵정공원 30분 주차 지원', lat: 37.5644188, lng: 127.0005564, today: true },
       { id: 'nangman', name: '낭만짬뽕', category: '중식', menu: '짬뽕', price: 9000, hours: '11:00–20:30 · 휴식 15:00–17:00 · 휴무일 출처 갈림(마지막 주 토 또는 토·일) — 월요일은 영업', walk: '도보 약 6분', tel: '02-2273-4458', note: '충무로 짬뽕 노포 · 홍합짬뽕 10,000원 · 냉짬뽕 11,000원 · 군만두 6,000원 · 식신에는 짬뽕 8,000원 표기라 가격은 방문 전 확인', lat: 37.5627021, lng: 126.9906845 },
@@ -195,7 +210,7 @@
       { id: 'jjukkumi', name: '충무로쭈꾸미불고기', category: '고기', menu: '쭈꾸미 불고기', price: 18000, hours: '12:00–22:00 · 브레이크 없음 · 일요일 휴무', walk: '도보 약 3분', tel: '02-2279-0803', lat: 37.5617290, lng: 126.9921675 }
     ];
 
-    const map = L.map('map', { zoomControl: false }).setView([37.5619, 126.9946], 16);
+    const map = L.map('map', { zoomControl: false }).setView(REGION.center, REGION.zoom);
     L.control.zoom({ position: 'bottomright' }).addTo(map);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
@@ -203,7 +218,7 @@
     }).addTo(map);
 
     const stationIcon = L.divIcon({ className: '', html: '<div class="station-pin">역</div>', iconSize: [22, 22], iconAnchor: [11, 11] });
-    L.marker([37.5612, 126.9941], { icon: stationIcon, zIndexOffset: 1000 }).addTo(map).bindTooltip('충무로역', { direction: 'top' });
+    L.marker([REGION.station.lat, REGION.station.lng], { icon: stationIcon, zIndexOffset: 1000 }).addTo(map).bindTooltip(REGION.station.name, { direction: 'top' });
 
     const markers = new Map();
     places.forEach((place, index) => {
@@ -258,14 +273,14 @@
         <h3>${place.name}</h3>
         <p class="detail-menu">${place.menu} · ${place.price.toLocaleString()}원</p>
         <div class="detail-facts">
-          <div class="fact"><strong>${place.walk}</strong><span>충무로역에서</span></div>
+          <div class="fact"><strong>${place.walk}</strong><span>${REGION.from}</span></div>
           <div class="fact"><strong>${place.category}</strong><span>분류</span></div>
           <div class="fact"><strong>${place.price.toLocaleString()}원</strong><span>대표 메뉴</span></div>
         </div>
         <p class="detail-note">🕐 ${place.hours}${place.note ? '<br>' + place.note : ''}</p>
         <div class="detail-links">
           ${place.tel ? `<a class="detail-tel" href="tel:${place.tel.replace(/-/g, '')}">📞 ${place.tel}</a>` : ''}
-          <a class="detail-naver" href="${place.naver || 'https://map.naver.com/p/search/' + encodeURIComponent(place.name + ' 충무로')}" target="_blank" rel="noopener">🗺 네이버지도</a>
+          <a class="detail-naver" href="${place.naver || 'https://map.naver.com/p/search/' + encodeURIComponent(place.name + ' ' + REGION.naver)}" target="_blank" rel="noopener">🗺 네이버지도</a>
         </div>
         <button type="button" class="visit-btn" id="visit-btn">🍚 다녀왔어요 — 기록 남기기</button>
         <div class="visit-form" id="visit-form" hidden>
@@ -489,7 +504,7 @@
         ${v.menu ? `<p class="detail-menu">${v.menu}</p>` : ''}
         ${renderVisits(id)}
         <div class="detail-links">
-          <a class="detail-naver" href="https://map.naver.com/p/search/${encodeURIComponent(v.name + ' 충무로')}" target="_blank" rel="noopener">🗺 네이버지도</a>
+          <a class="detail-naver" href="https://map.naver.com/p/search/${encodeURIComponent(v.name)}" target="_blank" rel="noopener">🗺 네이버지도</a>
         </div>`;
       panel.hidden = false;
     }
