@@ -164,17 +164,17 @@
       <div class="date">2026년 8월 18일 화요일 · 저녁 추천</div>
       <section class="hero">
         <div class="hero-top">
-          <span class="badge">오늘의 추천</span>
-          <small>휴식 15:00–17:00 · L.O 19:30</small>
+          <span class="badge">오늘의 추천 · 재추천</span>
+          <small>브레이크 없음 · 일요일 휴무</small>
         </div>
-        <h2>부자돈까스</h2>
-        <p class="menu">부자돈까스 · 10,000원</p>
+        <h2>호남식당</h2>
+        <p class="menu">충무로 돼지물갈비 · 15,000원</p>
         <div class="facts">
-          <div class="fact"><strong>약 8분</strong><span>충무로역에서</span></div>
-          <div class="fact"><strong>20:30</strong><span>영업 종료</span></div>
-          <div class="fact"><strong>경양식 · 돈까스</strong><span>오늘의 장르</span></div>
+          <div class="fact"><strong>약 5분</strong><span>충무로역에서</span></div>
+          <div class="fact"><strong>22:30</strong><span>영업 종료</span></div>
+          <div class="fact"><strong>한식 · 물갈비</strong><span>오늘의 장르</span></div>
         </div>
-        <button type="button" data-focus="buja">지도에서 보기</button>
+        <button type="button" data-focus="honam">지도에서 보기</button>
         <button type="button" class="re-pick" id="re-pick">🔄 새로운 곳으로 다시 추천받기</button>
       </section>
 
@@ -221,7 +221,8 @@
     document.getElementById('mt-text').textContent = REGION.mapTitle;
 
     const places = [
-      { id: 'buja', name: '부자돈까스', category: '돈까스', menu: '부자돈까스', price: 10000, hours: '평일 11:00–20:30 · 휴식 15:00–17:00 · L.O 19:30 · 토 휴무 · 일 10:30–14:00 — 화요일 17시는 저녁 영업 시작(2026-08-18 확인)', walk: '도보 약 8분', tel: '02-2271-2328', note: '을지로·충무로 직장인이 찾는 옛날 경양식 돈까스 · 생선까스 10,000원 · 모듬까스 11,000원 · 카레돈까스 11,000원 · 점심시간 웨이팅 많음 · 영업시간이 출처 간 갈려(매일 11:00–21:00 표기도 있음) 방문 전 전화 확인 권장', lat: 37.5642386, lng: 126.9897922, today: true },
+      { id: 'honam', name: '호남식당', category: '고기', menu: '충무로 돼지물갈비', price: 15000, hours: '12:00–22:30 · 브레이크타임 표기 없음 · 일요일 휴무 — 화요일 17시 영업 중(2026-08-18 확인, 식신은 13:00 오픈 표기)', walk: '도보 약 5분', tel: '02-2273-1348', note: '1984년 개업한 물갈비(쫄갈비) 노포 · 백종원의 3대천왕 소개 · 돼지갈비 12,000원 · 야채찜돼지갈비 14,000원 · 볶음밥 5,000원(셀프 2,000원) · 라스트오더는 출처에 없어 미확인', lat: 37.5628028, lng: 126.9952662, today: true },
+      { id: 'buja', name: '부자돈까스', category: '돈까스', menu: '부자돈까스', price: 10000, hours: '평일 11:00–20:30 · 휴식 15:00–17:00 · L.O 19:30 · 토 휴무 · 일 10:30–14:00 — 화요일 17시는 저녁 영업 시작(2026-08-18 확인)', walk: '도보 약 8분', tel: '02-2271-2328', note: '을지로·충무로 직장인이 찾는 옛날 경양식 돈까스 · 생선까스 10,000원 · 모듬까스 11,000원 · 카레돈까스 11,000원 · 점심시간 웨이팅 많음 · 영업시간이 출처 간 갈려(매일 11:00–21:00 표기도 있음) 방문 전 전화 확인 권장', lat: 37.5642386, lng: 126.9897922 },
       { id: 'nangman', name: '낭만짬뽕', category: '중식', menu: '짬뽕', price: 9000, hours: '11:00–20:30 · 휴식 15:00–17:00 · 휴무일 출처 갈림(마지막 주 토 또는 토·일) — 화요일은 영업', walk: '도보 약 6분', tel: '02-2273-4458', note: '충무로 짬뽕 노포 · 홍합짬뽕 10,000원 · 냉짬뽕 11,000원 · 군만두 6,000원 · 식신에는 짬뽕 8,000원 표기라 가격은 방문 전 확인', lat: 37.5627021, lng: 126.9906845 },
       { id: 'phoeon', name: '포언', category: '아시아', menu: '분짜', price: 14000, hours: '매일 11:00–21:00 · L.O 20:30 · 휴무 없음', walk: '도보 약 4분', tel: '0507-1406-3996', note: '베트남 쌀국수 전문점 · 양지차돌쌀국수 11,000원 · 반쎄오 후기 좋음 · 브레이크타임은 다이닝코드 기준 없음(일부 후기 15:00–16:30 표기)이나 어느 쪽이든 17시는 영업 중', lat: 37.5623854, lng: 126.9917454 },
       { id: 'jingogae', name: '진고개', category: '국물', menu: '갈비탕', price: 15000, hours: '11:00–21:00 · 휴식 15:00–17:00 · 일요일 휴무', walk: '도보 약 5분', tel: '02-2267-0955', note: '1963년 개업한 충무로 한식 노포 · 육개장 14,000원 · 물냉면 13,000원 · 갈비찜정식 24,000원은 예산 초과', lat: 37.5630127, lng: 126.9928333 },
