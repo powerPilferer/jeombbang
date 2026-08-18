@@ -21,9 +21,9 @@
       --chip: #3a3a3c;
       --line: rgba(255, 255, 255, .08);
       --sel: #3f3f43;            /* 선택 상태 — 카드보다 한 톤 밝게 */
-      --accent: #30d158;         /* 애플 그린 — CTA */
+      --accent: #ece1cb;         /* 밥 베이지 — CTA (점빵이 브랜드) */
       --accent-dark: #0a84ff;    /* 애플 블루 — 링크·칩 */
-      --green: #30d158;
+      --green: #0a84ff;
       --shadow: 0 10px 30px rgba(0, 0, 0, .35);
     }
     * { box-sizing: border-box; }
@@ -52,7 +52,7 @@
     .fact strong, .fact span { display: block; }
     .fact strong { font-size: 14px; }
     .fact span { margin-top: 2px; color: var(--muted); font-size: 11px; }
-    .hero button { width: 100%; margin-top: 16px; padding: 13px; border: 0; border-radius: 14px; color: #fff; background: var(--accent); font-weight: 700; font-size: 14.5px; cursor: pointer; }
+    .hero button { width: 100%; margin-top: 16px; padding: 13px; border: 0; border-radius: 14px; color: #2b2416; background: var(--accent); font-weight: 700; font-size: 14.5px; cursor: pointer; }
     .hero .re-pick { margin-top: 10px; background: var(--chip); color: #0a84ff; font-weight: 600; font-size: 13.5px; }
     .hero .re-pick:hover { background: #48484a; }
     .hero .re-pick:disabled { opacity: .6; cursor: default; }
@@ -83,11 +83,11 @@
     .visit-form textarea { border: 0; border-radius: 10px; padding: 10px 11px; font-size: 13px; resize: vertical; min-height: 52px; font-family: inherit; background: #3a3a3c; color: var(--ink); }
     .visit-form textarea:focus { outline: 1.5px solid #8d9db3; }
     .visit-form textarea::placeholder { color: #9a9aa0; }
-    .visit-save { padding: 12px; border: 0; border-radius: 12px; background: var(--accent); color: #fff; font-weight: 700; cursor: pointer; }
+    .visit-save { padding: 12px; border: 0; border-radius: 12px; background: var(--accent); color: #2b2416; font-weight: 700; cursor: pointer; }
     .visited-box { margin-top: 28px; padding: 16px 14px 14px; border-radius: 20px; background: rgba(44,44,46,.55); }
     .visited-box .vb-title { display: flex; align-items: center; gap: 7px; margin: 0 2px 11px; font-size: 14px; }
     .visited-box .vb-title .n { display: inline-grid; place-items: center; min-width: 21px; height: 21px;
-      padding: 0 6px; border-radius: 999px; background: var(--accent); color: #fff; font-size: 11.5px; font-weight: 800; }
+      padding: 0 6px; border-radius: 999px; background: var(--accent); color: #2b2416; font-size: 11.5px; font-weight: 800; }
     .visited-empty { padding: 13px 14px; border-radius: 12px;
       color: var(--muted); font-size: 12.5px; line-height: 1.5; background: var(--card); }
     .visit-card { position: relative; width: 100%; display: flex; flex-direction: column;
@@ -131,7 +131,7 @@
     .popup-copy { margin: 0; color: #6b7684; line-height: 1.5; }
     .pin { width: 40px; height: 40px; display: grid; place-items: center; border: 4px solid #fff; border-radius: 50% 50% 50% 8px; color: #fff; background: #292219; box-shadow: 0 7px 18px rgba(41,34,25,.28); transform: rotate(-45deg); font-size: 15px; font-weight: 900; }
     .pin span { transform: rotate(45deg); }
-    .pin.today { background: #2fb457; color: #fff; transform: rotate(-45deg) scale(1.14); }
+    .pin.today { background: #ece1cb; color: #2b2416; transform: rotate(-45deg) scale(1.14); }
     .jb-char { animation: jb-bob 1.6s steps(1) infinite; }
     .jb-char .jb-eyes { animation: jb-blink 4s steps(1) infinite; }
     @keyframes jb-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2px); } }
@@ -178,7 +178,7 @@
           <div class="fact"><strong>한식 · 물갈비</strong><span>오늘의 장르</span></div>
         </div>
         <button type="button" data-focus="honam">지도에서 보기</button>
-        <button type="button" class="re-pick" id="re-pick">🔄 새로운 곳으로 다시 추천받기</button>
+        <button type="button" class="re-pick" id="re-pick">👀 새로운 곳으로 다시 추천받기</button>
       </section>
 
       <section class="detail" id="detail" hidden></section>
