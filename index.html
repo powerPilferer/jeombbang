@@ -120,19 +120,19 @@
     .place .price { color: var(--accent-dark); font-weight: 800; }
     .map-shell { position: relative; min-width: 0; background: var(--paper); }
     /* 카카오맵은 다크 스타일이 없어 색반전+색상회전으로 어둡게 만들고, 오버레이(핀·팝업)는 역필터로 원색 복원 */
-    #map { width: 100%; height: 100%; background: #ececec; filter: invert(1) hue-rotate(180deg) saturate(.8) brightness(.94) contrast(1.03); }
-    #map .pin, #map .kpopup, #map .station-pin { filter: invert(1) hue-rotate(180deg) saturate(1.25) brightness(1.064) contrast(.971); }
+    #map { width: 100%; height: 100%; background: #e9e2d6; }
     .map-title { position: absolute; z-index: 450; top: 22px; left: 24px; display: flex; align-items: center; gap: 10px; padding: 11px 14px; border: 1px solid var(--line); border-radius: 16px; background: var(--panel); backdrop-filter: blur(12px); box-shadow: var(--shadow); font-size: 13px; font-weight: 800; }
     .map-title i { width: 9px; height: 9px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 5px rgba(79,174,134,.18); }
-    .kpopup { position: relative; width: 230px; padding: 15px 17px 14px; background: #26262f; border: 1px solid rgba(255,255,255,.17); border-radius: 18px; box-shadow: 0 16px 44px rgba(0,0,0,.7), 0 0 0 1px rgba(0,0,0,.4); font-size: 13px; color: var(--ink); white-space: normal; word-break: keep-all; }
-    .kpopup::after { content: ''; position: absolute; left: 50%; bottom: -7px; width: 15px; height: 15px; background: #26262f; border-right: 1px solid rgba(255,255,255,.17); border-bottom: 1px solid rgba(255,255,255,.17); transform: translateX(-50%) rotate(45deg); border-radius: 3px; }
-    .kpopup .kclose { position: absolute; top: 9px; right: 11px; border: 0; background: none; padding: 2px; color: var(--muted); font-size: 13px; cursor: pointer; }
-    .popup-kicker { color: var(--accent-dark); font-size: 11px; font-weight: 800; }
+    /* 팝업·핀 — 지도는 밝은 원래 모습이므로 라이트 팔레트를 그대로 쓴다 (페이지 다크와 별개) */
+    .kpopup { position: relative; width: 230px; padding: 15px 17px 14px; background: #fff; border-radius: 18px; box-shadow: 0 14px 40px rgba(41,34,25,.28); font-size: 13px; color: #191f28; white-space: normal; word-break: keep-all; }
+    .kpopup::after { content: ''; position: absolute; left: 50%; bottom: -7px; width: 15px; height: 15px; background: #fff; transform: translateX(-50%) rotate(45deg); border-radius: 3px; }
+    .kpopup .kclose { position: absolute; top: 9px; right: 11px; border: 0; background: none; padding: 2px; color: #8b95a1; font-size: 13px; cursor: pointer; }
+    .popup-kicker { color: #be3824; font-size: 11px; font-weight: 800; }
     .popup-title { margin: 4px 0; font-size: 17px; font-weight: 800; }
-    .popup-copy { margin: 0; color: var(--muted); line-height: 1.5; }
-    .pin { width: 40px; height: 40px; display: grid; place-items: center; border: 4px solid #fff; border-radius: 50% 50% 50% 8px; color: #fff; background: #2b2b33; box-shadow: 0 7px 18px rgba(0,0,0,.45); transform: rotate(-45deg); font-size: 15px; font-weight: 900; }
+    .popup-copy { margin: 0; color: #6b7684; line-height: 1.5; }
+    .pin { width: 40px; height: 40px; display: grid; place-items: center; border: 4px solid #fff; border-radius: 50% 50% 50% 8px; color: #fff; background: #292219; box-shadow: 0 7px 18px rgba(41,34,25,.28); transform: rotate(-45deg); font-size: 15px; font-weight: 900; }
     .pin span { transform: rotate(45deg); }
-    .pin.today { background: #ece1cb; color: #2b2416; transform: rotate(-45deg) scale(1.14); }
+    .pin.today { background: #ef5b3f; color: #fff; transform: rotate(-45deg) scale(1.14); }
     .jb-char { animation: jb-bob 1.6s steps(1) infinite; }
     .jb-char .jb-eyes { animation: jb-blink 4s steps(1) infinite; }
     @keyframes jb-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2px); } }
