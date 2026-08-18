@@ -652,7 +652,7 @@
     renderList();
     renderVisitedList();
     syncVisits();
-    setTimeout(() => selectPlace('buja', false), 450);
+    setTimeout(() => selectPlace(places.find(p => p.today)?.id || places[0].id, false), 450);
   </script>
 </body>
 </html>
