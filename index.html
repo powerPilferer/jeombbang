@@ -19,9 +19,9 @@
       --chip: #3a3a3c;
       --line: rgba(255, 255, 255, .08);
       --sel: #3f3f43;            /* 선택 상태 — 카드보다 한 톤 밝게 */
-      --accent: #d2815a;         /* F 클레이(채도 업) — 주 포인트 */
-      --accent-dark: #e5a583;    /* 다크 배경 위 클레이 텍스트용 */
-      --green: #8fa6c8;          /* K 블루 그레이(채도 업) — 서브 포인트 */
+      --accent: #30d158;         /* 애플 그린 — CTA */
+      --accent-dark: #0a84ff;    /* 애플 블루 — 링크·칩 */
+      --green: #30d158;
       --shadow: 0 10px 30px rgba(0, 0, 0, .35);
     }
     * { box-sizing: border-box; }
@@ -39,26 +39,26 @@
     h1 { margin: 0; font-size: 25px; letter-spacing: -.04em; }
     .date { margin-top: 20px; color: var(--muted); font-size: 13px; }
     /* 오늘의 추천 — iOS 카드: 테두리 없이 면 톤 + 큰 볼드 타이포, CTA만 코랄 */
-    .hero { margin-top: 10px; padding: 20px; border-radius: 16px; color: var(--ink); background: var(--card); }
+    .hero { margin-top: 12px; padding: 20px; border-radius: 20px; color: var(--ink); background: var(--card); }
     .hero-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-    .badge { display: inline-flex; padding: 6px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; background: var(--accent); color: #fff; }
+    .badge { display: inline-flex; padding: 6px 11px; border-radius: 999px; font-size: 12px; font-weight: 700; background: #0a84ff; color: #fff; }
     .hero small { color: var(--muted); }
     .hero h2 { margin: 16px 0 4px; font-size: 27px; font-weight: 800; letter-spacing: -.04em; }
-    .menu { margin: 0; color: var(--accent-dark); font-weight: 600; }
+    .menu { margin: 0; color: var(--muted); font-weight: 600; }
     .facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 18px; }
     .fact { padding: 11px 8px; border-radius: 12px; background: var(--chip); text-align: center; }
     .fact strong, .fact span { display: block; }
     .fact strong { font-size: 14px; }
     .fact span { margin-top: 2px; color: var(--muted); font-size: 11px; }
-    .hero button { width: 100%; margin-top: 15px; padding: 13px; border: 0; border-radius: 12px; color: #fff; background: var(--accent); font-weight: 700; font-size: 14.5px; cursor: pointer; }
-    .hero .re-pick { margin-top: 8px; background: #8fb0dc; color: #16161a; font-weight: 700; font-size: 13.5px; }
-    .hero .re-pick:hover { background: #a3c0e6; }
+    .hero button { width: 100%; margin-top: 16px; padding: 13px; border: 0; border-radius: 14px; color: #fff; background: var(--accent); font-weight: 700; font-size: 14.5px; cursor: pointer; }
+    .hero .re-pick { margin-top: 10px; background: var(--chip); color: #0a84ff; font-weight: 600; font-size: 13.5px; }
+    .hero .re-pick:hover { background: #48484a; }
     .hero .re-pick:disabled { opacity: .6; cursor: default; }
-    .section-title { margin: 25px 2px 10px; font-size: 14px; }
-    .detail { margin-top: 12px; padding: 18px 18px; border-radius: 16px; background: var(--card); }
-    .detail-kicker { color: #b3c7e2; font-size: 11px; font-weight: 800; letter-spacing: .08em; }
+    .section-title { margin: 28px 2px 12px; font-size: 14px; }
+    .detail { margin-top: 14px; padding: 18px 18px; border-radius: 20px; background: var(--card); }
+    .detail-kicker { color: var(--muted); font-size: 11px; font-weight: 700; letter-spacing: .08em; }
     .detail h3 { margin: 5px 0 2px; font-size: 19px; letter-spacing: -.03em; }
-    .detail .detail-menu { margin: 0; color: #b3c7e2; font-weight: 700; font-size: 13.5px; }
+    .detail .detail-menu { margin: 0; color: var(--muted); font-weight: 600; font-size: 13.5px; }
     .detail-facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; margin-top: 13px; }
     .detail-facts .fact { border-radius: 10px; background: var(--chip); padding: 9px 6px; text-align: center; }
     .detail-facts .fact strong { font-size: 12.5px; color: var(--ink); }
@@ -69,8 +69,8 @@
     .visit { padding: 10px 12px; border-radius: 10px; background: var(--chip); font-size: 12.5px; line-height: 1.5; }
     .visit b { color: var(--accent-dark); margin-right: 6px; }
     .visit small { color: var(--muted); margin-left: 6px; }
-    .visit-btn { margin-top: 13px; width: 100%; padding: 12px; border: 0; border-radius: 12px; color: #b3c7e2; background: rgba(143,166,200,.16); font-weight: 700; cursor: pointer; }
-    .visit-form { margin-top: 11px; padding: 13px; border-radius: 12px; background: #1c1c1e; display: grid; gap: 9px; }
+    .visit-btn { margin-top: 14px; width: 100%; padding: 12px; border: 0; border-radius: 14px; color: #0a84ff; background: var(--chip); font-weight: 600; cursor: pointer; }
+    .visit-form { margin-top: 12px; padding: 14px; border-radius: 16px; background: #1c1c1e; display: grid; gap: 9px; }
     .star-row { display: flex; align-items: center; gap: 2px; }
     .star { border: 0; background: none; padding: 2px; font-size: 30px; line-height: 1; color: #6e6e73; cursor: pointer; transition: color .1s, transform .1s; }
     .star:hover { transform: scale(1.15); }
@@ -81,16 +81,16 @@
     .visit-form textarea { border: 0; border-radius: 10px; padding: 10px 11px; font-size: 13px; resize: vertical; min-height: 52px; font-family: inherit; background: #3a3a3c; color: var(--ink); }
     .visit-form textarea:focus { outline: 1.5px solid #8d9db3; }
     .visit-form textarea::placeholder { color: #9a9aa0; }
-    .visit-save { padding: 11px; border: 0; border-radius: 10px; background: #8fb0dc; color: #16161a; font-weight: 700; cursor: pointer; }
-    .visited-box { margin-top: 26px; padding: 16px 14px 14px; border-radius: 16px; background: rgba(44,44,46,.55); }
+    .visit-save { padding: 12px; border: 0; border-radius: 12px; background: var(--accent); color: #fff; font-weight: 700; cursor: pointer; }
+    .visited-box { margin-top: 28px; padding: 16px 14px 14px; border-radius: 20px; background: rgba(44,44,46,.55); }
     .visited-box .vb-title { display: flex; align-items: center; gap: 7px; margin: 0 2px 11px; font-size: 14px; }
     .visited-box .vb-title .n { display: inline-grid; place-items: center; min-width: 21px; height: 21px;
       padding: 0 6px; border-radius: 999px; background: var(--accent); color: #fff; font-size: 11.5px; font-weight: 800; }
     .visited-empty { padding: 13px 14px; border-radius: 12px;
       color: var(--muted); font-size: 12.5px; line-height: 1.5; background: var(--card); }
     .visit-card { position: relative; width: 100%; display: flex; flex-direction: column;
-      align-items: flex-start; gap: 2px; padding: 12px 34px 12px 14px;
-      border: 0; border-radius: 12px; background: var(--card);
+      align-items: flex-start; gap: 2px; padding: 13px 34px 13px 15px;
+      border: 0; border-radius: 14px; background: var(--card);
       cursor: pointer; text-align: left; color: var(--ink); transition: .15s ease; }
     .visit-card:hover { background: var(--sel); }
     .visit-card .v-stars { line-height: 1; display: flex; }
@@ -102,19 +102,19 @@
     .visit-card .v-name { font-size: 14px; font-weight: 800; margin-top: 2px; }
     .visit-card .v-meta { color: var(--muted); font-size: 11.5px; line-height: 1.4; }
     .visit-card .del { position: absolute; top: 10px; right: 10px; }
-    .detail-tel { color: #b3c7e2; font-weight: 700; font-size: 13px; text-decoration: none; }
+    .detail-tel { color: #0a84ff; font-weight: 700; font-size: 13px; text-decoration: none; }
     .detail-naver { color: #03c75a; font-weight: 700; font-size: 13px; text-decoration: none; }
     .filters { display: flex; gap: 7px; flex-wrap: wrap; }
     .filter { padding: 8px 13px; border: 0; border-radius: 999px; color: var(--muted); background: var(--card); cursor: pointer; font-weight: 600; }
-    .filter.active { color: #16161a; background: #8fa6c8; font-weight: 700; }
-    .list { display: grid; gap: 9px; }
+    .filter.active { color: #fff; background: #636366; font-weight: 700; }
+    .list { display: grid; gap: 12px; }
     /* 후보 리스트 — iOS: 테두리 없이 면 톤만으로, 선택은 한 톤 밝게 */
-    .place { width: 100%; display: grid; grid-template-columns: 1fr auto; gap: 10px; padding: 14px 15px; border: 0; border-radius: 14px; text-align: left; color: var(--ink); background: var(--card); cursor: pointer; transition: background .15s ease; }
+    .place { width: 100%; display: grid; grid-template-columns: 1fr auto; gap: 10px; padding: 15px 16px; border: 0; border-radius: 16px; text-align: left; color: var(--ink); background: var(--card); cursor: pointer; transition: background .15s ease; }
     .place:hover { background: #333336; }
     .place.active { background: var(--sel); }
     .place strong { display: block; margin-bottom: 4px; }
     .place span { color: var(--muted); font-size: 12px; }
-    .place .price { color: var(--accent-dark); font-weight: 700; }
+    .place .price { color: #fff; font-weight: 700; }
     .map-shell { position: relative; min-width: 0; background: var(--paper); }
     /* 카카오맵은 다크 스타일이 없어 색반전+색상회전으로 어둡게 만들고, 오버레이(핀·팝업)는 역필터로 원색 복원 */
     #map { width: 100%; height: 100%; background: #e9e2d6; }
@@ -124,12 +124,12 @@
     .kpopup { position: relative; width: 230px; padding: 15px 17px 14px; background: #fff; border-radius: 18px; box-shadow: 0 14px 40px rgba(41,34,25,.28); font-size: 13px; color: #191f28; white-space: normal; word-break: keep-all; }
     .kpopup::after { content: ''; position: absolute; left: 50%; bottom: -7px; width: 15px; height: 15px; background: #fff; transform: translateX(-50%) rotate(45deg); border-radius: 3px; }
     .kpopup .kclose { position: absolute; top: 9px; right: 11px; border: 0; background: none; padding: 2px; color: #8b95a1; font-size: 13px; cursor: pointer; }
-    .popup-kicker { color: #d2815a; font-size: 11px; font-weight: 800; }
+    .popup-kicker { color: #0a84ff; font-size: 11px; font-weight: 800; }
     .popup-title { margin: 4px 0; font-size: 17px; font-weight: 800; }
     .popup-copy { margin: 0; color: #6b7684; line-height: 1.5; }
     .pin { width: 40px; height: 40px; display: grid; place-items: center; border: 4px solid #fff; border-radius: 50% 50% 50% 8px; color: #fff; background: #292219; box-shadow: 0 7px 18px rgba(41,34,25,.28); transform: rotate(-45deg); font-size: 15px; font-weight: 900; }
     .pin span { transform: rotate(45deg); }
-    .pin.today { background: #d2815a; color: #fff; transform: rotate(-45deg) scale(1.14); }
+    .pin.today { background: #2fb457; color: #fff; transform: rotate(-45deg) scale(1.14); }
     .jb-char { animation: jb-bob 1.6s steps(1) infinite; }
     .jb-char .jb-eyes { animation: jb-blink 4s steps(1) infinite; }
     @keyframes jb-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2px); } }
