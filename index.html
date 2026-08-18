@@ -68,9 +68,17 @@
     .detail-note { margin: 12px 0 0; padding-top: 11px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12.5px; line-height: 1.55; }
     .detail-links { display: flex; gap: 14px; margin-top: 11px; }
     .visits { margin-top: 13px; display: grid; gap: 7px; }
+    .visits-avg { display: flex; align-items: baseline; gap: 7px; margin: 2px 2px 0; font-weight: 800; font-size: 15px; color: #ffd60a; }
+    .visits-avg small { color: var(--muted); font-weight: 600; font-size: 11.5px; }
     .visit { padding: 10px 12px; border-radius: 10px; background: var(--chip); font-size: 12.5px; line-height: 1.5; }
-    .visit b { color: var(--accent-dark); margin-right: 6px; }
+    .visit b { color: #ffd60a; margin-right: 6px; }
     .visit small { color: var(--muted); margin-left: 6px; }
+    .visit .v-who { display: inline-block; margin-right: 7px; padding: 1px 8px; border-radius: 999px; background: #48484a; color: #fff; font-size: 10.5px; font-weight: 700; }
+    .visit .v-who.me { background: var(--accent); color: #2b2416; }
+    .mini-rate { color: #ffd60a; font-size: 12px; font-weight: 800; }
+    .nick-row { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--muted); }
+    .nick-row b { color: var(--accent-dark); }
+    #nick-edit { border: 0; background: var(--chip); color: var(--muted); border-radius: 8px; padding: 3px 9px; font-size: 11.5px; cursor: pointer; }
     .visit-btn { margin-top: 14px; width: 100%; padding: 12px; border: 0; border-radius: 14px; color: var(--accent-dark); background: var(--chip); font-weight: 600; cursor: pointer; }
     .visit-form { margin-top: 12px; padding: 14px; border-radius: 16px; background: #1c1c1e; display: grid; gap: 9px; }
     .star-row { display: flex; align-items: center; gap: 2px; }
@@ -304,7 +312,9 @@
         button.className = `place ${place.today ? 'active' : ''}`;
         button.dataset.id = place.id;
         const vmark = visitsOf(place.id).length ? ' <span title="다녀온 곳">🍚</span>' : '';
-        button.innerHTML = `<div><strong>${place.name}${vmark}</strong><span>${place.menu} · ${place.walk}</span></div><span class="price">${place.price.toLocaleString()}원</span>`;
+        const avg = avgOf(place.id);
+        const rateTag = avg ? ` <span class="mini-rate">★${avg.toFixed(1)}</span>` : '';
+        button.innerHTML = `<div><strong>${place.name}${rateTag}${vmark}</strong><span>${place.menu} · ${place.walk}</span></div><span class="price">${place.price.toLocaleString()}원</span>`;
         button.addEventListener('click', () => selectPlace(place.id, true));
         list.appendChild(button);
       });
@@ -328,7 +338,8 @@
           ${place.tel ? `<a class="detail-tel" href="tel:${place.tel.replace(/-/g, '')}">📞 ${place.tel}</a>` : ''}
           <a class="detail-naver" href="${place.naver || 'https://map.naver.com/p/search/' + encodeURIComponent(place.name + ' ' + REGION.naver)}" target="_blank" rel="noopener">🗺 네이버지도</a>
         </div>
-        <button type="button" class="visit-btn" id="visit-btn">🍚 다녀왔어요 — 기록 남기기</button>
+        ${renderVisits(place.id)}
+        <button type="button" class="visit-btn" id="visit-btn">🍚 다녀왔어요 — 리뷰 남기기</button>
         <div class="visit-form" id="visit-form" hidden>
           <div class="star-row" id="rate-row">
             <button type="button" class="star" data-v="1">★</button>
@@ -339,6 +350,7 @@
             <span class="star-label" id="star-label">별점을 골라주세요</span>
           </div>
           <textarea id="visit-comment" placeholder="짧은 감상평 (선택) — 예: 볶음밥 필수. 5시 도착하니 웨이팅 없음"></textarea>
+          <div class="nick-row">작성자 <b id="nick-cur"></b><button type="button" id="nick-edit">변경</button></div>
           <button type="button" class="visit-save" id="visit-save">기록하기</button>
         </div>`;
       panel.hidden = false;
@@ -350,7 +362,33 @@
     const VKEY = 'jb-visited-v2';
     let visits = [];                        // 서버(구글시트) 기록 — 모든 기기에서 공유
     try { visits = JSON.parse(localStorage.getItem(VKEY)) || []; } catch (e) {}   // 오프라인 캐시
-    function visitsOf(id) { return visits.filter(v => v.id === id && v.rate > 0).slice().reverse(); }
+
+    // ── 작성자(닉네임) — 다인 리뷰. 옛 기록·미설정 기기는 '주인장'으로 취급
+    let me = localStorage.getItem('jb-user') || '';
+    // 다인 모드 이전부터 쓰던 기기(캐시 보유)는 주인장 기기로 자동 인정
+    if (!me && visits.length) { me = '주인장'; localStorage.setItem('jb-user', me); }
+    const whoAmI = () => me || '주인장';
+    function ensureNick() {
+      if (me) return true;
+      const n = (prompt('리뷰에 표시할 닉네임을 정해주세요 (처음 한 번만)') || '').trim().slice(0, 12);
+      if (!n) return false;
+      me = n;
+      localStorage.setItem('jb-user', n);
+      return true;
+    }
+    // 리뷰는 남이 쓴 텍스트 — 화면에 넣기 전에 이스케이프
+    function esc(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+
+    function visitsOf(id) {   // 내 기록만 — 후보 제외·핀 숨김·다녀온곳은 개인 기준 유지
+      return visits.filter(v => v.id === id && v.rate > 0 && (v.user || '주인장') === whoAmI()).slice().reverse();
+    }
+    function allVisitsOf(id) {   // 모두의 리뷰 — 상세·평균용
+      return visits.filter(v => v.id === id && v.rate > 0).slice().reverse();
+    }
+    function avgOf(id) {
+      const rows = allVisitsOf(id);
+      return rows.length ? rows.reduce((s, v) => s + v.rate, 0) / rows.length : 0;
+    }
     function normDate(s) {
       const m = String(s).match(/\d{4}-\d{2}-\d{2}/);
       if (m) return m[0];
@@ -361,9 +399,13 @@
       try {
         const d = await fetch(VISIT_URL, { cache: 'no-store' }).then(r => r.json());
         if (d.ok) {
-          const byId = {};
-          d.list.forEach(v => { delete byId[v.id]; byId[v.id] = { ...v, date: normDate(v.date) }; });  // 마지막 기록만 + 활동순 정렬
-          visits = Object.values(byId);
+          const byKey = {};   // 가게+작성자별 마지막 기록만 + 활동순 정렬
+          d.list.forEach(v => {
+            const k = v.id + '|' + (v.user || '주인장');
+            delete byKey[k];
+            byKey[k] = { ...v, user: v.user || '주인장', date: normDate(v.date) };
+          });
+          visits = Object.values(byKey);
           localStorage.setItem(VKEY, JSON.stringify(visits));
           renderList();
           renderVisitedList();
@@ -382,7 +424,7 @@
         fetch(VISIT_URL, { method: 'POST', mode: 'no-cors',
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify({ id: v.id, name: v.name || '', menu: v.menu || '',
-                                 rate, comment: v.comment || '', date: v.date || '' }) }).catch(() => {});
+                                 rate, comment: v.comment || '', date: v.date || '', user: '주인장' }) }).catch(() => {});
       });
       localStorage.removeItem('jb-visited');
       setTimeout(syncVisits, 2500);   // 전송 후 서버 기준으로 다시 그림
@@ -399,9 +441,10 @@
       return h;
     }
     function rerate(el, e) {
+      if (!ensureNick()) return;   // 닉네임 없이 별을 만지면 먼저 정하게 — 남 기록 오수정 방지
       const id = el.dataset.id;
-      const cur = visits.find(v => v.id === id);
-      if (!cur) return;
+      const cur = visits.find(v => v.id === id && (v.user || '주인장') === whoAmI());   // 내 기록만 수정
+      if (!cur) { renderList(); renderVisitedList(); return; }
       const rect = el.getBoundingClientRect();
       const leftHalf = (e.clientX - rect.left) < rect.width / 2;
       let newRate = Number(el.dataset.v) - (leftHalf ? 0.5 : 0);
@@ -411,7 +454,7 @@
       if (newRate === 0) cur._cleared = true;
       localStorage.setItem(VKEY, JSON.stringify(visits));
       queueSave({ id, name: cur.name, menu: cur.menu || '', rate: newRate,
-                  comment: cur.comment || '', date: cur.date });
+                  comment: cur.comment || '', date: cur.date, user: whoAmI() });
       renderList();
       renderVisitedList();
     }
@@ -462,11 +505,15 @@
     }
 
     function renderVisits(id) {
-      const rows = visitsOf(id);
+      const rows = allVisitsOf(id);   // 모두의 리뷰
       if (!rows.length) return '';
-      return `<div class="visits">${rows.map(v =>
-        `<div class="visit"><b>${rateText(v.rate)}</b>${v.comment ? ' · ' + v.comment : ''}<small>${v.date}</small></div>`
-      ).join('')}</div>`;
+      const avg = avgOf(id);
+      return `<div class="visits">
+        <div class="visits-avg">★ ${avg.toFixed(1)}<small>리뷰 ${rows.length}개</small></div>
+        ${rows.map(v => {
+          const mine = (v.user || '주인장') === whoAmI();
+          return `<div class="visit"><span class="v-who${mine ? ' me' : ''}">${esc(v.user || '주인장')}</span><b>${rateText(v.rate)}</b>${v.comment ? ' · ' + esc(v.comment) : ''}<small>${v.date}</small></div>`;
+        }).join('')}</div>`;
     }
 
     function wireVisitForm(place) {
@@ -474,6 +521,17 @@
       const form = document.getElementById('visit-form');
       let rate = 0;
       btn.addEventListener('click', () => { form.hidden = !form.hidden; });
+      const nickCur = document.getElementById('nick-cur');
+      nickCur.textContent = whoAmI();
+      document.getElementById('nick-edit').addEventListener('click', () => {
+        const n = (prompt('리뷰에 표시할 닉네임', whoAmI()) || '').trim().slice(0, 12);
+        if (!n) return;
+        me = n;
+        localStorage.setItem('jb-user', n);
+        nickCur.textContent = n;
+        renderList();
+        renderVisitedList();
+      });
       const stars = [...form.querySelectorAll('.star')];
       function paintStars() {
         stars.forEach(el => {
@@ -492,12 +550,15 @@
       }));
       document.getElementById('visit-save').addEventListener('click', () => {
         if (!rate) { alert('별점을 골라주세요!'); return; }
+        if (!ensureNick()) return;
+        nickCur.textContent = whoAmI();
         if (visitsOf(place.id).length &&
-            !confirm(`"${place.name}"은 이미 기록이 있어요.\n마지막 기록을 지금 내용으로 업데이트할까요?`)) return;
+            !confirm(`"${place.name}"에 내 리뷰가 이미 있어요.\n지금 내용으로 업데이트할까요?`)) return;
         const comment = document.getElementById('visit-comment').value.trim();
         const rec = { id: place.id, name: place.name, menu: place.menu, rate, comment,
-                      date: new Date().toISOString().slice(0, 10) };
-        visits = visits.filter(v => v.id !== place.id);   // 가게당 1건 — 이전 기록 대체
+                      date: new Date().toISOString().slice(0, 10), user: whoAmI() };
+        // 가게당·사람당 1건 — 내 이전 기록만 대체
+        visits = visits.filter(v => !(v.id === place.id && (v.user || '주인장') === whoAmI()));
         visits.push(rec);
         localStorage.setItem(VKEY, JSON.stringify(visits));
         fetch(VISIT_URL, { method: 'POST', mode: 'no-cors',
@@ -512,8 +573,8 @@
 
     function renderVisitedList() {
       const wrap = document.getElementById('visited-list');
-      // 별점 무관, 기록 활동 순서(최근이 위)로 쌓는다
-      const src2 = visits.filter(v => v.rate > 0 || v._cleared).slice().reverse();
+      // 내 기록만, 별점 무관, 기록 활동 순서(최근이 위)로 쌓는다
+      const src2 = visits.filter(v => (v.user || '주인장') === whoAmI() && (v.rate > 0 || v._cleared)).slice().reverse();
       document.getElementById('visited-count').textContent = src2.filter(v => v.rate > 0).length;
       if (!src2.length) {
         wrap.innerHTML = '<div class="visited-empty">아직 기록이 없어요. 다녀온 식당을 클릭해 \'🍚 다녀왔어요\'로 남겨보세요.</div>';
@@ -521,11 +582,11 @@
       }
       wrap.innerHTML = src2.map(v => {
         const meta = v.rate > 0
-          ? `${v.comment || v.menu || ''} · ${v.date}`
+          ? `${esc(v.comment || v.menu || '')} · ${v.date}`
           : '별점을 지웠어요 — 페이지를 나가면 목록에서 사라집니다';
-        return `<button type="button" class="visit-card visited-row" data-id="${v.id}">
+        return `<button type="button" class="visit-card visited-row" data-id="${esc(v.id)}">
           <span class="v-stars">${starCells(v.id, v.rate)}</span>
-          <strong class="v-name">${v.name}</strong>
+          <strong class="v-name">${esc(v.name)}</strong>
           <span class="v-meta">${meta}</span></button>`;
       }).join('');
       wrap.querySelectorAll('.vstar').forEach(s => s.addEventListener('click', e => {
@@ -546,8 +607,8 @@
       const panel = document.getElementById('detail');
       panel.innerHTML = `
         <div class="detail-kicker">다녀온 곳 · 오늘 후보에는 없어요</div>
-        <h3>${v.name}</h3>
-        ${v.menu ? `<p class="detail-menu">${v.menu}</p>` : ''}
+        <h3>${esc(v.name)}</h3>
+        ${v.menu ? `<p class="detail-menu">${esc(v.menu)}</p>` : ''}
         ${renderVisits(id)}
         <div class="detail-links">
           <a class="detail-naver" href="https://map.naver.com/p/search/${encodeURIComponent(v.name)}" target="_blank" rel="noopener">🗺 네이버지도</a>
