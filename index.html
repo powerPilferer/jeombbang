@@ -11,117 +11,113 @@
   <style>
     :root {
       color-scheme: dark;
-      --ink: #f2f3f5;            /* 본문 글자 */
-      --muted: #9ea4ad;
-      --paper: #101013;          /* 페이지 배경 (모아 다크) */
-      --panel: rgba(20, 20, 24, .92);
-      --card: #17171c;           /* 카드 배경 (모아 다크) */
-      --chip: #22222a;
-      --line: #26262e;
-      --sel: #2c2c36;            /* 선택 상태 배경 — 카드보다 살짝만 밝게 */
-      --accent: #f4694c;         /* 점빵이 코랄 — 다크용으로 한 단계 밝게 */
-      --accent-dark: #ff9a82;    /* 다크 배경 위 코랄 텍스트용 */
-      --green: #4fae86;
-      --shadow: 0 18px 48px rgba(0, 0, 0, .5);
+      --ink: #ffffff;            /* 본문 글자 */
+      --muted: #98989f;          /* iOS secondary label */
+      --paper: #1a1a1c;          /* 페이지 배경 */
+      --panel: rgba(28, 28, 30, .86);   /* 프로스트 패널 */
+      --card: #2c2c2e;           /* 카드 — 테두리 없이 면 톤으로만 구분 */
+      --chip: #3a3a3c;
+      --line: rgba(255, 255, 255, .08);
+      --sel: #3f3f43;            /* 선택 상태 — 카드보다 한 톤 밝게 */
+      --accent: #ff6f52;         /* 점빵이 코랄 — CTA에만 절제해서 사용 */
+      --accent-dark: #ff8f75;    /* 다크 배경 위 코랄 텍스트용 */
+      --green: #30d158;          /* iOS green */
+      --shadow: 0 10px 30px rgba(0, 0, 0, .35);
     }
     * { box-sizing: border-box; }
     html, body { width: 100%; height: 100%; margin: 0; }
     body { font-family: Pretendard, "Apple SD Gothic Neo", sans-serif; color: var(--ink); background: var(--paper); }
     button, input { font: inherit; }
     .app { height: 100%; display: grid; grid-template-columns: 390px minmax(0, 1fr); overflow: hidden; }
-    .sidebar { position: relative; z-index: 500; padding: 28px 24px 22px; overflow-y: auto; background: var(--panel); backdrop-filter: blur(18px); border-right: 1px solid var(--line); box-shadow: 12px 0 40px rgba(0, 0, 0, .35); }
+    .sidebar { position: relative; z-index: 500; padding: 28px 22px 22px; overflow-y: auto; background: var(--panel); backdrop-filter: blur(30px) saturate(1.4); -webkit-backdrop-filter: blur(30px) saturate(1.4); box-shadow: 14px 0 44px rgba(0, 0, 0, .4); }
     .sidebar::-webkit-scrollbar { width: 8px; }
-    .sidebar::-webkit-scrollbar-thumb { background: #2c2c34; border-radius: 4px; }
+    .sidebar::-webkit-scrollbar-thumb { background: #48484a; border-radius: 4px; }
     .brand { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
     .brand-mark { width: 48px; height: 48px; display: grid; place-items: center; border-radius: 17px; color: #fff; background: var(--accent); font-size: 24px; transform: rotate(-4deg); box-shadow: 0 8px 20px rgba(239, 91, 63, .28); }
     .brand-copy { flex: 1; }
     .eyebrow { margin: 0 0 3px; color: var(--accent-dark); font-size: 12px; font-weight: 800; letter-spacing: .12em; }
     h1 { margin: 0; font-size: 25px; letter-spacing: -.04em; }
     .date { margin-top: 20px; color: var(--muted); font-size: 13px; }
-    /* 오늘의 추천 — 점빵이 밥 베이지(#ece1cb) 카드로 다른 박스와 구분 */
-    .hero { margin-top: 10px; padding: 22px; border-radius: 24px; color: #2b2416; background: linear-gradient(160deg, #f3ead6, #e5d6b8); border: 1px solid #d8c9a8; box-shadow: 0 18px 48px rgba(0, 0, 0, .45); }
+    /* 오늘의 추천 — iOS 카드: 테두리 없이 면 톤 + 큰 볼드 타이포, CTA만 코랄 */
+    .hero { margin-top: 10px; padding: 20px; border-radius: 16px; color: var(--ink); background: var(--card); }
     .hero-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-    .badge { display: inline-flex; padding: 7px 10px; border-radius: 999px; font-size: 12px; font-weight: 800; background: #ef5b3f; color: #fff; }
-    .hero small { color: #8a7c5e; }
-    .hero h2 { margin: 16px 0 4px; font-size: 26px; letter-spacing: -.05em; }
-    .menu { margin: 0; color: #b74424; font-weight: 700; }
+    .badge { display: inline-flex; padding: 6px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; background: var(--accent); color: #fff; }
+    .hero small { color: var(--muted); }
+    .hero h2 { margin: 16px 0 4px; font-size: 27px; font-weight: 800; letter-spacing: -.04em; }
+    .menu { margin: 0; color: var(--accent-dark); font-weight: 600; }
     .facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 18px; }
-    .fact { padding: 11px 8px; border: 1px solid rgba(78, 64, 37, .24); border-radius: 14px; text-align: center; }
+    .fact { padding: 11px 8px; border-radius: 12px; background: var(--chip); text-align: center; }
     .fact strong, .fact span { display: block; }
     .fact strong { font-size: 14px; }
-    .fact span { margin-top: 2px; color: #8a7c5e; font-size: 11px; }
-    .hero button { width: 100%; margin-top: 15px; padding: 12px; border: 0; border-radius: 14px; color: #f5edda; background: #2b2416; font-weight: 800; cursor: pointer; box-shadow: 0 6px 18px rgba(0, 0, 0, .25); }
-    .hero .re-pick { margin-top: 8px; background: transparent; box-shadow: none; border: 1.5px dashed rgba(43,36,22,.4);
-      color: rgba(43,36,22,.75); font-weight: 700; font-size: 13.5px; }
-    .hero .re-pick:hover { border-color: rgba(43,36,22,.7); }
-    .hero .re-pick:disabled { opacity: .7; cursor: default; border-style: solid; }
+    .fact span { margin-top: 2px; color: var(--muted); font-size: 11px; }
+    .hero button { width: 100%; margin-top: 15px; padding: 13px; border: 0; border-radius: 12px; color: #fff; background: var(--accent); font-weight: 700; font-size: 14.5px; cursor: pointer; }
+    .hero .re-pick { margin-top: 8px; background: var(--chip); color: var(--accent-dark); font-weight: 600; font-size: 13.5px; }
+    .hero .re-pick:hover { background: #48484a; }
+    .hero .re-pick:disabled { opacity: .6; cursor: default; }
     .section-title { margin: 25px 2px 10px; font-size: 14px; }
-    .detail { margin-top: 12px; padding: 18px 20px; border: 1px solid var(--line); border-radius: 20px; background: var(--card); box-shadow: 0 8px 24px rgba(0,0,0,.3); }
+    .detail { margin-top: 12px; padding: 18px 18px; border-radius: 16px; background: var(--card); }
     .detail-kicker { color: var(--accent-dark); font-size: 11px; font-weight: 800; letter-spacing: .08em; }
     .detail h3 { margin: 5px 0 2px; font-size: 19px; letter-spacing: -.03em; }
     .detail .detail-menu { margin: 0; color: var(--accent-dark); font-weight: 700; font-size: 13.5px; }
     .detail-facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; margin-top: 13px; }
-    .detail-facts .fact { border: 1px solid var(--line); border-radius: 12px; padding: 9px 6px; text-align: center; }
+    .detail-facts .fact { border-radius: 10px; background: var(--chip); padding: 9px 6px; text-align: center; }
     .detail-facts .fact strong { font-size: 12.5px; color: var(--ink); }
     .detail-facts .fact span { color: var(--muted); font-size: 10.5px; }
-    .detail-note { margin: 12px 0 0; padding-top: 11px; border-top: 1px dashed var(--line); color: var(--muted); font-size: 12.5px; line-height: 1.55; }
+    .detail-note { margin: 12px 0 0; padding-top: 11px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12.5px; line-height: 1.55; }
     .detail-links { display: flex; gap: 14px; margin-top: 11px; }
     .visits { margin-top: 13px; display: grid; gap: 7px; }
-    .visit { padding: 10px 12px; border-radius: 12px; background: rgba(244,105,76,.12); font-size: 12.5px; line-height: 1.5; }
+    .visit { padding: 10px 12px; border-radius: 10px; background: var(--chip); font-size: 12.5px; line-height: 1.5; }
     .visit b { color: var(--accent-dark); margin-right: 6px; }
     .visit small { color: var(--muted); margin-left: 6px; }
-    .visit-btn { margin-top: 13px; width: 100%; padding: 11px; border: 1px dashed rgba(244,105,76,.55); border-radius: 12px; color: var(--accent-dark); background: rgba(244,105,76,.08); font-weight: 800; cursor: pointer; }
-    .visit-form { margin-top: 11px; padding: 13px; border: 1px solid var(--line); border-radius: 14px; background: rgba(34,34,42,.6); display: grid; gap: 9px; }
+    .visit-btn { margin-top: 13px; width: 100%; padding: 12px; border: 0; border-radius: 12px; color: var(--accent-dark); background: rgba(255,111,82,.16); font-weight: 700; cursor: pointer; }
+    .visit-form { margin-top: 11px; padding: 13px; border-radius: 12px; background: #1c1c1e; display: grid; gap: 9px; }
     .star-row { display: flex; align-items: center; gap: 2px; }
-    .star { border: 0; background: none; padding: 2px; font-size: 30px; line-height: 1; color: #3a3a45; cursor: pointer; transition: color .1s, transform .1s; }
+    .star { border: 0; background: none; padding: 2px; font-size: 30px; line-height: 1; color: #48484a; cursor: pointer; transition: color .1s, transform .1s; }
     .star:hover { transform: scale(1.15); }
-    .star.on { color: #f2a33c; text-shadow: 0 1px 4px rgba(242,163,60,.4); }
-    .star.half { background: linear-gradient(90deg, #f2a33c 50%, #3a3a45 50%);
+    .star.on { color: #ffd60a; text-shadow: none; }
+    .star.half { background: linear-gradient(90deg, #ffd60a 50%, #48484a 50%);
       -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none; }
     .star-label { margin-left: 8px; font-size: 12px; color: var(--muted); font-weight: 700; }
-    .visit-form textarea { border: 1px solid var(--line); border-radius: 10px; padding: 9px 11px; font-size: 13px; resize: vertical; min-height: 52px; font-family: inherit; background: var(--paper); color: var(--ink); }
+    .visit-form textarea { border: 0; border-radius: 10px; padding: 10px 11px; font-size: 13px; resize: vertical; min-height: 52px; font-family: inherit; background: var(--card); color: var(--ink); }
     .visit-form textarea::placeholder { color: #5b616b; }
-    .visit-save { padding: 10px; border: 0; border-radius: 10px; background: var(--accent); color: #fff; font-weight: 800; cursor: pointer; }
-    .visited-box { margin-top: 26px; padding: 16px 15px 15px; border-radius: 20px;
-      background: linear-gradient(150deg, rgba(244,105,76,.12), rgba(79,174,134,.08));
-      border: 1px solid rgba(244,105,76,.28); }
+    .visit-save { padding: 11px; border: 0; border-radius: 10px; background: var(--accent); color: #fff; font-weight: 700; cursor: pointer; }
+    .visited-box { margin-top: 26px; padding: 16px 14px 14px; border-radius: 16px; background: rgba(44,44,46,.55); }
     .visited-box .vb-title { display: flex; align-items: center; gap: 7px; margin: 0 2px 11px; font-size: 14px; }
     .visited-box .vb-title .n { display: inline-grid; place-items: center; min-width: 21px; height: 21px;
       padding: 0 6px; border-radius: 999px; background: var(--accent); color: #fff; font-size: 11.5px; font-weight: 800; }
-    /* 다녀온 곳 — 밥 베이지 카드로 히어로와 톤 맞춤 */
-    .visited-empty { padding: 13px 14px; border: 1px dashed rgba(183,68,36,.45); border-radius: 14px;
-      color: #8a7c5e; font-size: 12.5px; line-height: 1.5; background: #ece1cb; }
+    .visited-empty { padding: 13px 14px; border-radius: 12px;
+      color: var(--muted); font-size: 12.5px; line-height: 1.5; background: var(--card); }
     .visit-card { position: relative; width: 100%; display: flex; flex-direction: column;
       align-items: flex-start; gap: 2px; padding: 12px 34px 12px 14px;
-      border: 0; border-left: 4px solid var(--accent); border-radius: 12px; background: #ece1cb;
-      cursor: pointer; text-align: left; color: #2b2416; box-shadow: 0 3px 10px rgba(0,0,0,.25); transition: .15s ease; }
-    .visit-card:hover { transform: translateX(2px); background: #f5edda; box-shadow: 0 5px 16px rgba(0,0,0,.4); }
+      border: 0; border-radius: 12px; background: var(--card);
+      cursor: pointer; text-align: left; color: var(--ink); transition: .15s ease; }
+    .visit-card:hover { background: var(--sel); }
     .visit-card .v-stars { line-height: 1; display: flex; }
-    .visit-card .vstar { font-size: 19px; color: #cdbfa0; cursor: pointer; padding: 2px 2px; transition: transform .1s; }
+    .visit-card .vstar { font-size: 19px; color: #48484a; cursor: pointer; padding: 2px 2px; transition: transform .1s; }
     .visit-card .vstar:hover { transform: scale(1.2); }
-    .visit-card .vstar.on { color: #dd8a12; }
-    .visit-card .vstar.half { background: linear-gradient(90deg, #dd8a12 50%, #cdbfa0 50%);
+    .visit-card .vstar.on { color: #ffd60a; }
+    .visit-card .vstar.half { background: linear-gradient(90deg, #ffd60a 50%, #48484a 50%);
       -webkit-background-clip: text; background-clip: text; color: transparent; }
     .visit-card .v-name { font-size: 14px; font-weight: 800; margin-top: 2px; }
-    .visit-card .v-meta { color: #8a7c5e; font-size: 11.5px; line-height: 1.4; }
+    .visit-card .v-meta { color: var(--muted); font-size: 11.5px; line-height: 1.4; }
     .visit-card .del { position: absolute; top: 10px; right: 10px; }
-    .detail-tel { color: var(--green); font-weight: 800; font-size: 13px; text-decoration: none; }
-    .detail-naver { color: #03c75a; font-weight: 800; font-size: 13px; text-decoration: none; }
+    .detail-tel { color: #0a84ff; font-weight: 700; font-size: 13px; text-decoration: none; }
+    .detail-naver { color: var(--green); font-weight: 700; font-size: 13px; text-decoration: none; }
     .filters { display: flex; gap: 7px; flex-wrap: wrap; }
-    .filter { padding: 8px 12px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); background: var(--chip); cursor: pointer; }
-    .filter.active { border-color: var(--accent); color: #fff; background: var(--sel); }
+    .filter { padding: 8px 13px; border: 0; border-radius: 999px; color: var(--muted); background: var(--card); cursor: pointer; font-weight: 600; }
+    .filter.active { color: #fff; background: #636366; }
     .list { display: grid; gap: 9px; }
-    /* 후보 리스트 — 기본은 배경보다 살짝만 밝게 톤 다운, 선택된 것만 베이지로 밝게 */
-    .place { width: 100%; display: grid; grid-template-columns: 1fr auto; gap: 10px; padding: 14px 15px; border: 1px solid transparent; border-radius: 18px; text-align: left; color: var(--ink); background: #1a1a20; cursor: pointer; transition: .2s ease; }
-    .place:hover { border-color: rgba(244,105,76,.45); background: #22222a; transform: translateY(-1px); }
-    .place.active { border-color: var(--accent); background: var(--sel); transform: translateY(-1px); }
+    /* 후보 리스트 — iOS: 테두리 없이 면 톤만으로, 선택은 한 톤 밝게 */
+    .place { width: 100%; display: grid; grid-template-columns: 1fr auto; gap: 10px; padding: 14px 15px; border: 0; border-radius: 14px; text-align: left; color: var(--ink); background: var(--card); cursor: pointer; transition: background .15s ease; }
+    .place:hover { background: #333336; }
+    .place.active { background: var(--sel); }
     .place strong { display: block; margin-bottom: 4px; }
     .place span { color: var(--muted); font-size: 12px; }
-    .place .price { color: var(--accent-dark); font-weight: 800; }
+    .place .price { color: var(--accent-dark); font-weight: 700; }
     .map-shell { position: relative; min-width: 0; background: var(--paper); }
     /* 카카오맵은 다크 스타일이 없어 색반전+색상회전으로 어둡게 만들고, 오버레이(핀·팝업)는 역필터로 원색 복원 */
     #map { width: 100%; height: 100%; background: #e9e2d6; }
-    .map-title { position: absolute; z-index: 450; top: 22px; left: 24px; display: flex; align-items: center; gap: 10px; padding: 11px 14px; border: 1px solid var(--line); border-radius: 16px; background: var(--panel); backdrop-filter: blur(12px); box-shadow: var(--shadow); font-size: 13px; font-weight: 800; }
+    .map-title { position: absolute; z-index: 450; top: 22px; left: 24px; display: flex; align-items: center; gap: 10px; padding: 11px 14px; border-radius: 13px; background: var(--panel); backdrop-filter: blur(20px) saturate(1.4); -webkit-backdrop-filter: blur(20px) saturate(1.4); box-shadow: 0 8px 24px rgba(0,0,0,.35); font-size: 13px; font-weight: 700; }
     .map-title i { width: 9px; height: 9px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 5px rgba(79,174,134,.18); }
     /* 팝업·핀 — 지도는 밝은 원래 모습이므로 라이트 팔레트를 그대로 쓴다 (페이지 다크와 별개) */
     .kpopup { position: relative; width: 230px; padding: 15px 17px 14px; background: #fff; border-radius: 18px; box-shadow: 0 14px 40px rgba(41,34,25,.28); font-size: 13px; color: #191f28; white-space: normal; word-break: keep-all; }
