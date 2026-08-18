@@ -56,9 +56,9 @@
     .hero .re-pick:disabled { opacity: .6; cursor: default; }
     .section-title { margin: 25px 2px 10px; font-size: 14px; }
     .detail { margin-top: 12px; padding: 18px 18px; border-radius: 16px; background: var(--card); }
-    .detail-kicker { color: var(--accent-dark); font-size: 11px; font-weight: 800; letter-spacing: .08em; }
+    .detail-kicker { color: #a8b7cb; font-size: 11px; font-weight: 800; letter-spacing: .08em; }
     .detail h3 { margin: 5px 0 2px; font-size: 19px; letter-spacing: -.03em; }
-    .detail .detail-menu { margin: 0; color: var(--accent-dark); font-weight: 700; font-size: 13.5px; }
+    .detail .detail-menu { margin: 0; color: #a8b7cb; font-weight: 700; font-size: 13.5px; }
     .detail-facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; margin-top: 13px; }
     .detail-facts .fact { border-radius: 10px; background: var(--chip); padding: 9px 6px; text-align: center; }
     .detail-facts .fact strong { font-size: 12.5px; color: var(--ink); }
@@ -69,17 +69,18 @@
     .visit { padding: 10px 12px; border-radius: 10px; background: var(--chip); font-size: 12.5px; line-height: 1.5; }
     .visit b { color: var(--accent-dark); margin-right: 6px; }
     .visit small { color: var(--muted); margin-left: 6px; }
-    .visit-btn { margin-top: 13px; width: 100%; padding: 12px; border: 0; border-radius: 12px; color: var(--accent-dark); background: rgba(185,122,99,.2); font-weight: 700; cursor: pointer; }
+    .visit-btn { margin-top: 13px; width: 100%; padding: 12px; border: 0; border-radius: 12px; color: #a8b7cb; background: rgba(141,157,179,.16); font-weight: 700; cursor: pointer; }
     .visit-form { margin-top: 11px; padding: 13px; border-radius: 12px; background: #1c1c1e; display: grid; gap: 9px; }
     .star-row { display: flex; align-items: center; gap: 2px; }
-    .star { border: 0; background: none; padding: 2px; font-size: 30px; line-height: 1; color: #48484a; cursor: pointer; transition: color .1s, transform .1s; }
+    .star { border: 0; background: none; padding: 2px; font-size: 30px; line-height: 1; color: #6e6e73; cursor: pointer; transition: color .1s, transform .1s; }
     .star:hover { transform: scale(1.15); }
     .star.on { color: #ffd60a; text-shadow: none; }
-    .star.half { background: linear-gradient(90deg, #ffd60a 50%, #48484a 50%);
+    .star.half { background: linear-gradient(90deg, #ffd60a 50%, #6e6e73 50%);
       -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none; }
     .star-label { margin-left: 8px; font-size: 12px; color: var(--muted); font-weight: 700; }
-    .visit-form textarea { border: 0; border-radius: 10px; padding: 10px 11px; font-size: 13px; resize: vertical; min-height: 52px; font-family: inherit; background: var(--card); color: var(--ink); }
-    .visit-form textarea::placeholder { color: #5b616b; }
+    .visit-form textarea { border: 0; border-radius: 10px; padding: 10px 11px; font-size: 13px; resize: vertical; min-height: 52px; font-family: inherit; background: #3a3a3c; color: var(--ink); }
+    .visit-form textarea:focus { outline: 1.5px solid #8d9db3; }
+    .visit-form textarea::placeholder { color: #9a9aa0; }
     .visit-save { padding: 11px; border: 0; border-radius: 10px; background: var(--accent); color: #fff; font-weight: 700; cursor: pointer; }
     .visited-box { margin-top: 26px; padding: 16px 14px 14px; border-radius: 16px; background: rgba(44,44,46,.55); }
     .visited-box .vb-title { display: flex; align-items: center; gap: 7px; margin: 0 2px 11px; font-size: 14px; }
@@ -93,10 +94,10 @@
       cursor: pointer; text-align: left; color: var(--ink); transition: .15s ease; }
     .visit-card:hover { background: var(--sel); }
     .visit-card .v-stars { line-height: 1; display: flex; }
-    .visit-card .vstar { font-size: 19px; color: #48484a; cursor: pointer; padding: 2px 2px; transition: transform .1s; }
+    .visit-card .vstar { font-size: 19px; color: #6e6e73; cursor: pointer; padding: 2px 2px; transition: transform .1s; }
     .visit-card .vstar:hover { transform: scale(1.2); }
     .visit-card .vstar.on { color: #ffd60a; }
-    .visit-card .vstar.half { background: linear-gradient(90deg, #ffd60a 50%, #48484a 50%);
+    .visit-card .vstar.half { background: linear-gradient(90deg, #ffd60a 50%, #6e6e73 50%);
       -webkit-background-clip: text; background-clip: text; color: transparent; }
     .visit-card .v-name { font-size: 14px; font-weight: 800; margin-top: 2px; }
     .visit-card .v-meta { color: var(--muted); font-size: 11.5px; line-height: 1.4; }
@@ -105,7 +106,7 @@
     .detail-naver { color: var(--green); font-weight: 700; font-size: 13px; text-decoration: none; }
     .filters { display: flex; gap: 7px; flex-wrap: wrap; }
     .filter { padding: 8px 13px; border: 0; border-radius: 999px; color: var(--muted); background: var(--card); cursor: pointer; font-weight: 600; }
-    .filter.active { color: #fff; background: #636366; }
+    .filter.active { color: #16161a; background: #8d9db3; font-weight: 700; }
     .list { display: grid; gap: 9px; }
     /* 후보 리스트 — iOS: 테두리 없이 면 톤만으로, 선택은 한 톤 밝게 */
     .place { width: 100%; display: grid; grid-template-columns: 1fr auto; gap: 10px; padding: 14px 15px; border: 0; border-radius: 14px; text-align: left; color: var(--ink); background: var(--card); cursor: pointer; transition: background .15s ease; }
