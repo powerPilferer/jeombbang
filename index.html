@@ -37,22 +37,22 @@
     .eyebrow { margin: 0 0 3px; color: var(--accent-dark); font-size: 12px; font-weight: 800; letter-spacing: .12em; }
     h1 { margin: 0; font-size: 25px; letter-spacing: -.04em; }
     .date { margin-top: 20px; color: var(--muted); font-size: 13px; }
-    /* 오늘의 추천 — 유일하게 코랄 그라데이션 카드로 다른 박스와 구분 */
-    .hero { margin-top: 10px; padding: 22px; border-radius: 24px; color: #fff; background: linear-gradient(160deg, #f4694c, #cf4227); border: 1px solid rgba(255, 255, 255, .16); box-shadow: 0 18px 48px rgba(244, 105, 76, .28); }
+    /* 오늘의 추천 — 점빵이 밥 베이지(#ece1cb) 카드로 다른 박스와 구분 */
+    .hero { margin-top: 10px; padding: 22px; border-radius: 24px; color: #2b2416; background: linear-gradient(160deg, #f3ead6, #e5d6b8); border: 1px solid #d8c9a8; box-shadow: 0 18px 48px rgba(0, 0, 0, .45); }
     .hero-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-    .badge { display: inline-flex; padding: 7px 10px; border-radius: 999px; font-size: 12px; font-weight: 800; background: #fff; color: #cf4227; }
-    .hero small { color: rgba(255, 255, 255, .85); }
+    .badge { display: inline-flex; padding: 7px 10px; border-radius: 999px; font-size: 12px; font-weight: 800; background: #ef5b3f; color: #fff; }
+    .hero small { color: #8a7c5e; }
     .hero h2 { margin: 16px 0 4px; font-size: 26px; letter-spacing: -.05em; }
-    .menu { margin: 0; color: #ffe3dc; font-weight: 700; }
+    .menu { margin: 0; color: #b74424; font-weight: 700; }
     .facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 18px; }
-    .fact { padding: 11px 8px; border: 1px solid rgba(255, 255, 255, .28); border-radius: 14px; text-align: center; }
+    .fact { padding: 11px 8px; border: 1px solid rgba(78, 64, 37, .24); border-radius: 14px; text-align: center; }
     .fact strong, .fact span { display: block; }
     .fact strong { font-size: 14px; }
-    .fact span { margin-top: 2px; color: rgba(255, 255, 255, .78); font-size: 11px; }
-    .hero button { width: 100%; margin-top: 15px; padding: 12px; border: 0; border-radius: 14px; color: #cf4227; background: #fff; font-weight: 800; cursor: pointer; box-shadow: 0 6px 18px rgba(0, 0, 0, .2); }
-    .hero .re-pick { margin-top: 8px; background: transparent; box-shadow: none; border: 1.5px dashed rgba(255,255,255,.35);
-      color: rgba(255,255,255,.85); font-weight: 700; font-size: 13.5px; }
-    .hero .re-pick:hover { border-color: rgba(255,255,255,.8); }
+    .fact span { margin-top: 2px; color: #8a7c5e; font-size: 11px; }
+    .hero button { width: 100%; margin-top: 15px; padding: 12px; border: 0; border-radius: 14px; color: #f5edda; background: #2b2416; font-weight: 800; cursor: pointer; box-shadow: 0 6px 18px rgba(0, 0, 0, .25); }
+    .hero .re-pick { margin-top: 8px; background: transparent; box-shadow: none; border: 1.5px dashed rgba(43,36,22,.4);
+      color: rgba(43,36,22,.75); font-weight: 700; font-size: 13.5px; }
+    .hero .re-pick:hover { border-color: rgba(43,36,22,.7); }
     .hero .re-pick:disabled { opacity: .7; cursor: default; border-style: solid; }
     .section-title { margin: 25px 2px 10px; font-size: 14px; }
     .detail { margin-top: 12px; padding: 18px 20px; border: 1px solid var(--line); border-radius: 20px; background: var(--card); box-shadow: 0 8px 24px rgba(0,0,0,.3); }
@@ -87,21 +87,22 @@
     .visited-box .vb-title { display: flex; align-items: center; gap: 7px; margin: 0 2px 11px; font-size: 14px; }
     .visited-box .vb-title .n { display: inline-grid; place-items: center; min-width: 21px; height: 21px;
       padding: 0 6px; border-radius: 999px; background: var(--accent); color: #fff; font-size: 11.5px; font-weight: 800; }
-    .visited-empty { padding: 13px 14px; border: 1px dashed rgba(244,105,76,.5); border-radius: 14px;
-      color: #5f6570; font-size: 12.5px; line-height: 1.5; background: #e9ebf0; }
+    /* 다녀온 곳 — 밥 베이지 카드로 히어로와 톤 맞춤 */
+    .visited-empty { padding: 13px 14px; border: 1px dashed rgba(183,68,36,.45); border-radius: 14px;
+      color: #8a7c5e; font-size: 12.5px; line-height: 1.5; background: #ece1cb; }
     .visit-card { position: relative; width: 100%; display: flex; flex-direction: column;
       align-items: flex-start; gap: 2px; padding: 12px 34px 12px 14px;
-      border: 0; border-left: 4px solid var(--accent); border-radius: 12px; background: #e9ebf0;
-      cursor: pointer; text-align: left; color: #191f28; box-shadow: 0 3px 10px rgba(0,0,0,.25); transition: .15s ease; }
-    .visit-card:hover { transform: translateX(2px); background: #fff; box-shadow: 0 5px 16px rgba(0,0,0,.4); }
+      border: 0; border-left: 4px solid var(--accent); border-radius: 12px; background: #ece1cb;
+      cursor: pointer; text-align: left; color: #2b2416; box-shadow: 0 3px 10px rgba(0,0,0,.25); transition: .15s ease; }
+    .visit-card:hover { transform: translateX(2px); background: #f5edda; box-shadow: 0 5px 16px rgba(0,0,0,.4); }
     .visit-card .v-stars { line-height: 1; display: flex; }
-    .visit-card .vstar { font-size: 19px; color: #c6cad2; cursor: pointer; padding: 2px 2px; transition: transform .1s; }
+    .visit-card .vstar { font-size: 19px; color: #cdbfa0; cursor: pointer; padding: 2px 2px; transition: transform .1s; }
     .visit-card .vstar:hover { transform: scale(1.2); }
-    .visit-card .vstar.on { color: #f2a33c; }
-    .visit-card .vstar.half { background: linear-gradient(90deg, #f2a33c 50%, #c6cad2 50%);
+    .visit-card .vstar.on { color: #dd8a12; }
+    .visit-card .vstar.half { background: linear-gradient(90deg, #dd8a12 50%, #cdbfa0 50%);
       -webkit-background-clip: text; background-clip: text; color: transparent; }
     .visit-card .v-name { font-size: 14px; font-weight: 800; margin-top: 2px; }
-    .visit-card .v-meta { color: #5f6570; font-size: 11.5px; line-height: 1.4; }
+    .visit-card .v-meta { color: #8a7c5e; font-size: 11.5px; line-height: 1.4; }
     .visit-card .del { position: absolute; top: 10px; right: 10px; }
     .detail-tel { color: var(--green); font-weight: 800; font-size: 13px; text-decoration: none; }
     .detail-naver { color: #03c75a; font-weight: 800; font-size: 13px; text-decoration: none; }
@@ -109,12 +110,15 @@
     .filter { padding: 8px 12px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); background: var(--chip); cursor: pointer; }
     .filter.active { border-color: var(--accent); color: #fff; background: var(--accent); }
     .list { display: grid; gap: 9px; }
-    /* 리스트 카드는 밝은 배경 — 어두운 페이지 위에서 또렷하게 */
-    .place { width: 100%; display: grid; grid-template-columns: 1fr auto; gap: 10px; padding: 14px 15px; border: 1px solid transparent; border-radius: 18px; text-align: left; color: #191f28; background: #e9ebf0; cursor: pointer; transition: .2s ease; }
-    .place:hover, .place.active { border-color: var(--accent); background: #fff; transform: translateY(-1px); }
+    /* 후보 리스트 — 기본은 배경보다 살짝만 밝게 톤 다운, 선택된 것만 베이지로 밝게 */
+    .place { width: 100%; display: grid; grid-template-columns: 1fr auto; gap: 10px; padding: 14px 15px; border: 1px solid transparent; border-radius: 18px; text-align: left; color: var(--ink); background: #1a1a20; cursor: pointer; transition: .2s ease; }
+    .place:hover { border-color: rgba(244,105,76,.45); background: #22222a; transform: translateY(-1px); }
+    .place.active { border-color: var(--accent); background: #ece1cb; color: #2b2416; transform: translateY(-1px); }
     .place strong { display: block; margin-bottom: 4px; }
-    .place span { color: #5f6570; font-size: 12px; }
-    .place .price { color: #cf4227; font-weight: 800; }
+    .place span { color: var(--muted); font-size: 12px; }
+    .place .price { color: var(--accent-dark); font-weight: 800; }
+    .place.active span { color: #8a7c5e; }
+    .place.active .price { color: #b74424; }
     .map-shell { position: relative; min-width: 0; background: var(--paper); }
     /* 카카오맵은 다크 스타일이 없어 색반전+색상회전으로 어둡게 만들고, 오버레이(핀·팝업)는 역필터로 원색 복원 */
     #map { width: 100%; height: 100%; background: #ececec; filter: invert(1) hue-rotate(180deg) saturate(.8) brightness(.94) contrast(1.03); }
