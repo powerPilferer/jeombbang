@@ -172,20 +172,20 @@
         </div>
       </header>
 
-      <div class="date">2026년 8월 21일 금요일 · 저녁 추천</div>
+      <div class="date">2026년 8월 22일 토요일 · 저녁 추천</div>
       <section class="hero">
         <div class="hero-top">
           <span class="badge">오늘의 추천</span>
-          <small>휴식 15:00–17:00 · 일요일 휴무</small>
+          <small>매일 11:00–22:00 · 브레이크타임 없음</small>
         </div>
-        <h2>오구반점</h2>
-        <p class="menu">짬뽕 + 군만두 · 9,000원~</p>
+        <h2>강경불고기 화도점</h2>
+        <p class="menu">강경 돼지불고기 · 19,000원</p>
         <div class="facts">
-          <div class="fact"><strong>약 10분</strong><span>충무로역에서</span></div>
-          <div class="fact"><strong>21:00</strong><span>영업 종료</span></div>
-          <div class="fact"><strong>중식</strong><span>오늘의 장르</span></div>
+          <div class="fact"><strong>차로 약 5분</strong><span>마석역에서</span></div>
+          <div class="fact"><strong>22:00</strong><span>영업 종료</span></div>
+          <div class="fact"><strong>한식</strong><span>오늘의 장르</span></div>
         </div>
-        <button type="button" data-focus="ogubanjeom">지도에서 보기</button>
+        <button type="button" data-focus="ganggyeonghwado">지도에서 보기</button>
         <button type="button" class="re-pick" id="re-pick">👀 새로운 곳으로 다시 추천받기</button>
       </section>
 
@@ -194,11 +194,9 @@
       <h2 class="section-title">근처 후보</h2>
       <div class="filters" aria-label="음식 종류 필터">
         <button class="filter active" data-filter="all">전체</button>
-        <button class="filter" data-filter="초밥">초밥</button>
-        <button class="filter" data-filter="아시아">아시아</button>
         <button class="filter" data-filter="고기">고기</button>
         <button class="filter" data-filter="국물">국물</button>
-        <button class="filter" data-filter="돈까스">돈까스</button>
+        <button class="filter" data-filter="백숙">백숙</button>
         <button class="filter" data-filter="중식">중식</button>
       </div>
       <div class="list" id="place-list"></div>
@@ -228,18 +226,16 @@
                    station: { name: '마석역', lat: 37.6523223, lng: 127.3118672 },
                    from: '마석역에서', naver: '남양주' }
     };
-    const REGION = REGIONS.chungmuro;
+    const REGION = REGIONS.maseok;
     document.querySelector('.eyebrow').textContent = REGION.eyebrow;
     document.getElementById('mt-text').textContent = REGION.mapTitle;
 
     const places = [
-      { id: 'ogubanjeom', name: '오구반점', category: '중식', menu: '짬뽕 + 군만두', price: 9000, hours: '월–금 11:00–21:00 · 휴식 15:00–17:00 · 토 11:00–20:00 · 일요일 휴무 — 금요일 17시는 저녁 영업 시작(2026-08-21 확인)', walk: '도보 약 10분', tel: '02-2267-0516', note: '을지로3가역 2번 출구 앞 중식 노포 · 겉바속촉 군만두 11,000원이 시그니처 · 짜장면 8,000원 · 간짜장 9,000원 · 탕수육 22,000원 · 볶음밥 9,000원 · 라스트오더는 출처에 없어 미확인', lat: 37.5665483, lng: 126.9898291, today: true },
-      { id: 'sansugapsan', name: '산수갑산', category: '국물', menu: '순대국밥', price: 10000, hours: '월–토 11:00–21:30 · 휴식 15:00–17:00 · L.O 20:30 · 일요일 휴무 — 금요일 17시는 저녁 영업 시작(2026-08-20 확인)', walk: '도보 약 7분', tel: '02-2275-6654', note: '피순대·부속 모둠으로 유명한 을지로 순대 노포 · 순대국밥 특 12,000원 · 순대정식 1인 15,000원(2인 이상) · 모듬순대 2인 28,000원 · 현장 대기만 가능, 일행 전원 도착해야 입장', lat: 37.5654189, lng: 126.9953168 },
-      { id: 'parkjihu', name: '박지후스시', category: '초밥', menu: '초밥 정식', price: 12000, hours: '11:00–22:00 · 휴식 15:00–17:00 · L.O 20:30 · 일요일 휴무(2026-08-19 확인)', walk: '도보 약 4분', tel: '010-8246-2191', note: '저온 숙성 초밥 가성비 맛집 · 정직한 스시 18,000원 · 반반초밥 5+5 17,000원 · 박/지/후 스시 23,000~30,000원 · 좌표는 수표로6길 33 건물 기준(±10m)', lat: 37.5624097, lng: 126.9932122 },
-      { id: 'honam', name: '호남식당', category: '고기', menu: '충무로 돼지물갈비', price: 15000, hours: '12:00–22:30 · 브레이크타임 표기 없음 · 일요일 휴무(2026-08-18 확인, 식신은 13:00 오픈 표기)', walk: '도보 약 5분', tel: '02-2273-1348', note: '1984년 개업한 물갈비(쫄갈비) 노포 · 백종원의 3대천왕 소개 · 돼지갈비 12,000원 · 야채찜돼지갈비 14,000원 · 볶음밥 5,000원(셀프 2,000원) · 라스트오더는 출처에 없어 미확인', lat: 37.5628028, lng: 126.9952662 },
-      { id: 'buja', name: '부자돈까스', category: '돈까스', menu: '부자돈까스', price: 10000, hours: '평일 11:00–20:30 · 휴식 15:00–17:00 · L.O 19:30 · 토 휴무 · 일 10:30–14:00(2026-08-18 확인)', walk: '도보 약 8분', tel: '02-2271-2328', note: '을지로·충무로 직장인이 찾는 옛날 경양식 돈까스 · 생선까스 10,000원 · 모듬까스 11,000원 · 카레돈까스 11,000원 · 점심시간 웨이팅 많음 · 영업시간이 출처 간 갈려(매일 11:00–21:00 표기도 있음) 방문 전 전화 확인 권장', lat: 37.5642386, lng: 126.9897922 },
-      { id: 'nangman', name: '낭만짬뽕', category: '중식', menu: '짬뽕', price: 9000, hours: '11:00–20:30 · 휴식 15:00–17:00 · 휴무일 출처 갈림(마지막 주 토 또는 토·일) — 금요일은 영업', walk: '도보 약 6분', tel: '02-2273-4458', note: '충무로 짬뽕 노포 · 홍합짬뽕 10,000원 · 냉짬뽕 11,000원 · 군만두 6,000원 · 식신에는 짬뽕 8,000원 표기라 가격은 방문 전 확인', lat: 37.5627021, lng: 126.9906845 },
-      { id: 'phoeon', name: '포언', category: '아시아', menu: '분짜', price: 14000, hours: '매일 11:00–21:00 · L.O 20:30 · 휴무 없음', walk: '도보 약 4분', tel: '0507-1406-3996', note: '베트남 쌀국수 전문점 · 양지차돌쌀국수 11,000원 · 반쎄오 후기 좋음 · 브레이크타임은 다이닝코드 기준 없음(일부 후기 15:00–16:30 표기)이나 어느 쪽이든 17시는 영업 중', lat: 37.5623854, lng: 126.9917454 }
+      { id: 'ganggyeonghwado', name: '강경불고기 화도점', category: '고기', menu: '강경 돼지불고기', price: 19000, hours: '매일 11:00–22:00 · L.O 21:00 · 브레이크타임 없음(2026-08-22 확인)', walk: '차로 약 5분', tel: '0507-1403-5145', note: '매장 앞 전용 주차장 7대 이상 — 주차 여유 · 숯불 돼지불고기에 쌈채소 셀프바 무한리필, 계란·국물 서비스 포함 · 옛날 소불고기 22,000원 · 갈비탕 15,000원 · 메밀냉면 8,000원 · 강경 육회 30,000원 · 주소 화도읍 경춘로1842번길 28 1층(마석역에서 직선 약 1.6km) · 정기휴무 표기가 없어 방문 전 전화 확인 권장', lat: 37.6528827, lng: 127.2940055, today: true },
+      { id: 'dongtaemaeul', name: '동태마을불낙지', category: '국물', menu: '동태탕', price: 12000, hours: '11:00–21:30 · 휴식 15:00–17:00 · 수요일·공휴일 휴무 — 토요일 17시는 저녁 영업 시작(2026-08-22 확인)', walk: '차로 약 4분', tel: '031-594-8822', note: '뚝배기 가득 동태 한 마리를 내는 마석 해물탕 노포 · 동태내장탕 12,000원 · 황태구이 13,000원 · 낙지볶음(중) 39,000원 · 해물찜(중) 57,000원은 2인 이상 메뉴 · 주소 화도읍 맷돌로91번길 18-1(마석역에서 약 780m) · 주차는 유료 · 일부 사이트는 브레이크타임 없이 연중무휴로 적어 방문 전 전화 확인 권장', lat: 37.6586168, lng: 127.3017334 },
+      { id: 'jinsimien', name: '진시미엔', category: '중식', menu: '진한 짬뽕', price: 8500, hours: '매일 11:00–21:20 · 휴식 15:00–17:00 · L.O 20:30 · 명절 휴무 — 토요일 17시는 저녁 영업 시작(2026-08-22 확인)', walk: '차로 약 2분', note: '마석역 바로 앞 짬뽕 전문 중식당 · 굴짬뽕 10,000원 · 간짜장 8,000원 · 진시 탕수육 14,000원 · 주소 화도읍 마석중앙로 104-1 · 좌표는 마석중앙로 도로 기준(±50m) · 전화번호는 어느 출처에서도 확인하지 못함', lat: 37.6520273, lng: 127.3109419 },
+      { id: 'gulttukbaeksuk', name: '굴뚝능이버섯백숙', category: '백숙', menu: '능계탕(1인)', price: 18000, hours: '매일 10:30–21:30 · 브레이크타임 없음 · 연중무휴(설·추석 당일 제외)(2026-08-22 확인)', walk: '차로 약 8분', tel: '031-594-3311', note: '무료주차 — 매장 앞 5~10대, 뒤편 10대 · 개별룸·셀프바 있어 가족 식사에 적합, 1인 식사도 가능 · 능이버섯닭백숙/오리백숙 각 80,000원(찰밥 4인분 포함) · 생선구이 2인세트 34,000원 · 갈치조림·불고기·김치찌개 각 10,000원 · 주소 화도읍 묵현로 46', lat: 37.6600734, lng: 127.2914085 },
+      { id: 'giwajipsundubu', name: '기와집순두부 조안본점', category: '국물', menu: '순두부백반', price: 11000, hours: '매일 10:30–20:30 · L.O 20:00 · 브레이크타임 없음(2026-08-22 확인)', walk: '차로 약 25분', tel: '031-576-9009', note: '북한강변 조안면 순두부 노포 · 매장 앞마당과 맞은편에 넓은 주차 공간(주말 피크타임에는 만차 가능) · 콩탕백반 8,000원 · 두부김치 13,000원 · 주소 조안면 북한강로 133 · 마석에서 약 13km라 이동 시간을 넉넉히 잡을 것', lat: 37.5372735, lng: 127.3024543 }
     ];
 
     const map = new kakao.maps.Map(document.getElementById('map'), {
